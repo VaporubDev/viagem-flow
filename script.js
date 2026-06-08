@@ -1,5 +1,37 @@
-// Array para armazenar as viagens em memória
+const STORAGE_KEY = 'excel_storage';
 let viagens = [];
+let tarefas = [];
+
+function loadFromStorage() {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    viagens = saved.viagens || [];
+    tarefas = saved.tarefas || [];
+}
+
+function saveToStorage() {
+    const data = { viagens, tarefas };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+loadFromStorage();
+
+// Formatador de Moeda
+const STORAGE_KEY = 'excel_storage';
+let viagens = [];
+let tarefas = [];
+
+function loadFromStorage() {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    viagens = saved.viagens || [];
+    tarefas = saved.tarefas || [];
+}
+
+function saveToStorage() {
+    const data = { viagens, tarefas };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+loadFromStorage();
 
 // Elementos do DOM
 const form = document.getElementById('viagemForm');
@@ -65,6 +97,7 @@ form.addEventListener('submit', (e) => {
     viagens.push(novaViagem);
     atualizarTabela();
     form.reset();
+    saveToStorage();
 });
 
 // Eventos do Checklist
@@ -81,10 +114,16 @@ const adicionarTarefa = () => {
     
     li.querySelector('.trash').addEventListener('click', (e) => {
         e.stopPropagation();
+        // Remove da lista de tarefas no armazenamento
+        tarefas = tarefas.filter(t => t !== texto);
+        saveToStorage();
         li.remove();
     });
     
     listaTarefas.appendChild(li);
+    // Registrar a nova tarefa
+    tarefas.push(texto);
+    saveToStorage();
     inputTarefa.value = '';
 };
 
