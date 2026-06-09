@@ -32,6 +32,29 @@ header {
     margin-bottom: 2rem;
     text-align: center;
     color: var(--primary-color);
+    position: relative;
+}
+
+.btn-tema {
+    width: 2.75rem;
+    height: 2.75rem;
+    position: absolute;
+    top: 50%;
+    right: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--card-bg);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    font-size: 1.25rem;
+    transform: translateY(-50%);
+}
+
+.btn-tema:hover {
+    background-color: var(--bg-color);
 }
 
 .grid-layout {
@@ -56,7 +79,6 @@ h2 {
     padding-bottom: 0.5rem;
 }
 
-/* Formulário */
 .input-group {
     margin-bottom: 1rem;
     display: flex;
@@ -121,7 +143,6 @@ button {
     background-color: var(--success-hover);
 }
 
-/* Checklist */
 .checklist-input {
     display: flex;
     gap: 0.5rem;
@@ -151,7 +172,6 @@ button {
     border-bottom: 1px solid var(--border-color);
 }
 
-/* Tabela */
 .list-header {
     display: flex;
     justify-content: space-between;
@@ -179,6 +199,14 @@ th {
     font-weight: 600;
 }
 
+.celula-editavel {
+    cursor: context-menu;
+}
+
+.celula-editavel:hover {
+    background-color: #f9fafb;
+}
+
 .status-badge {
     padding: 0.25rem 0.5rem;
     border-radius: 999px;
@@ -202,12 +230,175 @@ th {
     color: var(--primary-color);
 }
 
-/* Responsividade */
+.btn-excluir-viagem {
+    width: 2rem;
+    height: 2rem;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ef4444;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+.btn-excluir-viagem::before,
+.btn-excluir-viagem::after {
+    content: "";
+    width: 1rem;
+    height: 0.16rem;
+    position: absolute;
+    background-color: white;
+    border-radius: 999px;
+}
+
+.btn-excluir-viagem::before {
+    transform: rotate(45deg);
+}
+
+.btn-excluir-viagem::after {
+    transform: rotate(-45deg);
+}
+
+.btn-excluir-viagem:hover {
+    background-color: #dc2626;
+    transform: scale(1.05);
+}
+
+.menu-edicao {
+    min-width: 220px;
+    position: fixed;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    padding: 0.75rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.18);
+}
+
+.menu-edicao strong {
+    font-size: 0.9rem;
+    color: var(--text-main);
+}
+
+.menu-edicao input {
+    width: 100%;
+    padding: 0.55rem;
+}
+
+.btn-salvar-edicao,
+.status-opcao {
+    width: 100%;
+    padding: 0.55rem 0.75rem;
+    text-align: left;
+    background-color: var(--bg-color);
+    color: var(--text-main);
+}
+
+.btn-salvar-edicao {
+    text-align: center;
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.btn-salvar-edicao:hover {
+    background-color: var(--primary-hover);
+}
+
+.status-opcao:hover,
+.status-opcao.ativo {
+    background-color: #dbeafe;
+    color: #1e40af;
+}
+
 @media (max-width: 768px) {
+    header {
+        padding-top: 3.5rem;
+    }
+
+    .btn-tema {
+        top: 0;
+        right: 50%;
+        transform: translateX(50%);
+    }
+
     .grid-layout {
         grid-template-columns: 1fr;
     }
     .row {
         flex-direction: column;
+    }
+}
+
+.taskbar {
+    margin-top: 1.5rem;
+    background: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+}
+
+.taskbar-content {
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.taskbar-title {
+    font-weight: 600;
+    color: var(--text-main);
+    font-size: 1rem;
+}
+
+.taskbar-buttons {
+    display: flex;
+    gap: 1rem;
+}
+
+.btn-danger {
+    background-color: #ef4444;
+    color: white;
+    padding: 0.5rem 1rem;
+    transition: background-color 0.2s;
+}
+
+.btn-danger:hover {
+    background-color: #dc2626;
+}
+
+.btn-excel {
+    background-color: var(--success-color);
+    color: white;
+    padding: 0.5rem 1rem;
+}
+
+.btn-excel:hover {
+    background-color: var(--success-hover);
+}
+
+@media (max-width: 640px) {
+    .taskbar-content {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .taskbar-buttons {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .taskbar-buttons button {
+        flex: 1;
     }
 }

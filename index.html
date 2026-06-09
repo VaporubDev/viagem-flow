@@ -5,11 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestão de Viagens</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="dark.css">
 </head>
 <body>
     <div class="container">
         <header>
             <h1>✈️ Gestão de Viagens</h1>
+            <button id="btnTema" class="btn-tema" type="button" aria-label="Ativar modo escuro">🌙</button>
         </header>
 
         <div class="grid-layout">
@@ -70,7 +72,6 @@
         <section class="card list-section">
             <div class="list-header">
                 <h2>Viagens Cadastradas</h2>
-                <button id="btnExportar" class="btn-excel">📊 Exportar para Excel</button>
             </div>
             <div class="table-responsive">
                 <table id="tabelaViagens">
@@ -90,6 +91,21 @@
                 </table>
             </div>
         </section>
+        <footer class="taskbar">
+            <div class="taskbar-content">
+                <div class="taskbar-title">
+                    📋 Ações do Sistema
+                </div>
+                <div class="taskbar-buttons">
+                    <button id="btnExportarFooter" class="btn-excel">
+                        📊 Exportar para Excel
+                    </button>
+                    <button id="btnReiniciar" class="btn-danger">
+                        🗑️ Reiniciar Tudo
+                    </button>
+                </div>
+            </div>
+        </footer>
     </div>
 
     <script src="script.js"></script>
