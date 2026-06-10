@@ -240,6 +240,7 @@ const criarElementoViagem = (viagem) => {
         <td><button type="button" class="btn-excluir-viagem" title="Excluir viagem" aria-label="Excluir viagem"></button></td>
     `;
 
+    const btnExcluir = tr.querySelector('.btn-excluir-viagem');
     btnExcluir.addEventListener('click', async () => {
         const confirmar = confirm(`Deseja excluir a viagem de ${viagem.nome} para ${viagem.destino}?`);
         if (!confirmar) return;
