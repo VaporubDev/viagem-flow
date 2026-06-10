@@ -20,29 +20,31 @@ async function carregarDados() {
         console.warn('Backend offline. Usando fallback de localStorage local.', error);
         usingLocalFallback = true;
         
-        const viagensLocal = localStorage.getItem('viagens_db');
-        const tarefasLocal = localStorage.getItem('tarefas_db');
+        let viagensLocal = localStorage.getItem('viagens_db');
+        let tarefasLocal = localStorage.getItem('tarefas_db');
         
-        if (!viagensLocal && !tarefasLocal) {
-            // Popula com dados demo interessantes para a primeira visualização no GitHub Pages
+        if (!viagensLocal) {
             const dadosDemoViagens = [
                 { id: 1, nome: "Cintia Souza", destino: "Paris, França", dataIda: "2026-09-15", dataVolta: "2026-09-25", hotel: "Hôtel Le Bristol", status: "Pago", valor: 12500.00 },
                 { id: 2, nome: "Cintia Souza", destino: "Orlando, EUA", dataIda: "2026-12-05", dataVolta: "2026-12-20", hotel: "Cabana Bay Resort", status: "Pendente", valor: 8900.00 },
                 { id: 3, nome: "Lucas Souza", destino: "Gramado, Brasil", dataIda: "2026-07-10", dataVolta: "2026-07-15", hotel: "Hotel Alpestre", status: "Pago", valor: 3200.00 }
             ];
+            localStorage.setItem('viagens_db', JSON.stringify(dadosDemoViagens));
+            viagensLocal = JSON.stringify(dadosDemoViagens);
+        }
+        
+        if (!tarefasLocal) {
             const dadosDemoTarefas = [
                 { id: 1, texto: "Renovar passaporte", concluida: true },
                 { id: 2, texto: "Comprar moedas estrangeiras", concluida: false },
                 { id: 3, texto: "Fazer seguro viagem", concluida: false }
             ];
-            viagens = dadosDemoViagens;
-            tarefas = dadosDemoTarefas;
-            localStorage.setItem('viagens_db', JSON.stringify(viagens));
-            localStorage.setItem('tarefas_db', JSON.stringify(tarefas));
-        } else {
-            viagens = viagensLocal ? JSON.parse(viagensLocal) : [];
-            tarefas = tarefasLocal ? JSON.parse(tarefasLocal) : [];
+            localStorage.setItem('tarefas_db', JSON.stringify(dadosDemoTarefas));
+            tarefasLocal = JSON.stringify(dadosDemoTarefas);
         }
+        
+        viagens = JSON.parse(viagensLocal);
+        tarefas = JSON.parse(tarefasLocal);
     }
 
     atualizarTabela();
