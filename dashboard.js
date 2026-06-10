@@ -1,6 +1,25 @@
 const API_URL = 'http://localhost:5144/api';
 const THEME_KEY = 'excel_theme';
 
+// Helper para evitar lentidão esperando o timeout do navegador quando a API está offline
+const fetchWithTimeout = async (resource, options = {}) => {
+    const { timeout = 300 } = options;
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), timeout);
+    
+    try {
+        const response = await fetch(resource, {
+            ...options,
+            signal: controller.signal
+        });
+        clearTimeout(id);
+        return response;
+    } catch (error) {
+        clearTimeout(id);
+        throw error;
+    }
+};
+
 const elTotalInvestido = document.getElementById('valTotalInvestido');
 const elPendentes = document.getElementById('valPendentes');
 const elDestinoMaisVisitado = document.getElementById('valDestinoMaisVisitado');
@@ -43,7 +62,7 @@ async function carregarDashboard() {
     }
 
     try {
-        const response = await fetch(`${API_URL}/viagens`);
+        const response = await fetchWithTimeout(`${API_URL}/viagens`);
         if (!response.ok) throw new Error('Falha ao buscar viagens');
         dadosViagens = await response.json();
     } catch (error) {

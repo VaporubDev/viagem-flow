@@ -4,11 +4,30 @@ let viagens = [];
 let tarefas = [];
 let usingLocalFallback = false;
 
+// Helper para evitar lentidão esperando o timeout do navegador quando a API está offline
+const fetchWithTimeout = async (resource, options = {}) => {
+    const { timeout = 300 } = options;
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), timeout);
+    
+    try {
+        const response = await fetch(resource, {
+            ...options,
+            signal: controller.signal
+        });
+        clearTimeout(id);
+        return response;
+    } catch (error) {
+        clearTimeout(id);
+        throw error;
+    }
+};
+
 async function carregarDados() {
     try {
         const [viagensRes, tarefasRes] = await Promise.all([
-            fetch(`${API_URL}/viagens`),
-            fetch(`${API_URL}/tarefas`)
+            fetchWithTimeout(`${API_URL}/viagens`),
+            fetchWithTimeout(`${API_URL}/tarefas`)
         ]);
 
         if (viagensRes.ok) viagens = await viagensRes.json();
