@@ -1,0 +1,96 @@
+/* ==========================================================================
+   FlyEasy Dashboard Styles
+   ========================================================================== */
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.metric-card {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.75rem;
+}
+
+.metric-icon {
+    font-size: 2.25rem;
+    width: 4rem;
+    height: 4rem;
+    border-radius: 50%;
+    background-color: var(--primary-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+}
+
+.metric-card:hover .metric-icon {
+    transform: scale(1.1);
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.metric-info h3 {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.metric-info p {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--text-main);
+}
+
+.charts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+@media (max-width: 900px) {
+    .charts-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.chart-card {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    min-height: 400px;
+}
+
+.chart-card h2 {
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 0;
+    font-size: 1.25rem;
+}
+
+.chart-container {
+    position: relative;
+    flex: 1;
+    width: 100%;
+    min-height: 300px;
+}
+
+/* ==========================================================================
+   Dark Mode Overrides for Dashboard
+   ========================================================================== */
+
+body.dark-mode .metric-icon {
+    background-color: var(--primary-light);
+    color: var(--primary-color);
+}
+
+body.dark-mode .metric-card:hover .metric-icon {
+    background-color: var(--primary-color);
+    color: #0f0a1c;
+}
