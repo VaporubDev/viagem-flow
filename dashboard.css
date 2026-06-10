@@ -65,6 +65,9 @@
     flex-direction: column;
     gap: 1.25rem;
     min-height: 400px;
+    min-width: 0;
+    width: 100%;
+    overflow: hidden;
 }
 
 .chart-card h2 {
@@ -78,7 +81,9 @@
     position: relative;
     flex: 1;
     width: 100%;
+    max-width: 100%;
     min-height: 300px;
+    overflow: hidden;
 }
 
 /* ==========================================================================
@@ -93,4 +98,36 @@ body.dark-mode .metric-icon {
 body.dark-mode .metric-card:hover .metric-icon {
     background-color: var(--primary-color);
     color: #0f0a1c;
+}
+
+@media (max-width: 600px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .metric-card {
+        padding: 1.25rem;
+        gap: 1rem;
+    }
+    
+    .metric-icon {
+        width: 3.25rem;
+        height: 3.25rem;
+        font-size: 1.75rem;
+    }
+    
+    .metric-info p {
+        font-size: 1.35rem;
+    }
+    
+    .chart-card {
+        min-height: 380px;
+        padding: 1.25rem;
+        min-width: 0;
+    }
+    
+    .chart-container {
+        min-height: 280px;
+    }
 }
