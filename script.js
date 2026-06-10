@@ -2,6 +2,7 @@ const API_URL = 'http://localhost:5144/api';
 const THEME_KEY = 'excel_theme';
 let viagens = [];
 let tarefas = [];
+let usingLocalFallback = false;
 
 async function carregarDados() {
     try {
@@ -12,12 +13,40 @@ async function carregarDados() {
 
         if (viagensRes.ok) viagens = await viagensRes.json();
         if (tarefasRes.ok) tarefas = await tarefasRes.json();
-
-        atualizarTabela();
-        carregarTarefas();
+        
+        usingLocalFallback = false;
+        console.log('Conectado à API backend SQLite.');
     } catch (error) {
-        console.error('Erro ao carregar dados da API:', error);
+        console.warn('Backend offline. Usando fallback de localStorage local.', error);
+        usingLocalFallback = true;
+        
+        const viagensLocal = localStorage.getItem('viagens_db');
+        const tarefasLocal = localStorage.getItem('tarefas_db');
+        
+        if (!viagensLocal && !tarefasLocal) {
+            // Popula com dados demo interessantes para a primeira visualização no GitHub Pages
+            const dadosDemoViagens = [
+                { id: 1, nome: "Cintia Souza", destino: "Paris, França", dataIda: "2026-09-15", dataVolta: "2026-09-25", hotel: "Hôtel Le Bristol", status: "Pago", valor: 12500.00 },
+                { id: 2, nome: "Cintia Souza", destino: "Orlando, EUA", dataIda: "2026-12-05", dataVolta: "2026-12-20", hotel: "Cabana Bay Resort", status: "Pendente", valor: 8900.00 },
+                { id: 3, nome: "Lucas Souza", destino: "Gramado, Brasil", dataIda: "2026-07-10", dataVolta: "2026-07-15", hotel: "Hotel Alpestre", status: "Pago", valor: 3200.00 }
+            ];
+            const dadosDemoTarefas = [
+                { id: 1, texto: "Renovar passaporte", concluida: true },
+                { id: 2, texto: "Comprar moedas estrangeiras", concluida: false },
+                { id: 3, texto: "Fazer seguro viagem", concluida: false }
+            ];
+            viagens = dadosDemoViagens;
+            tarefas = dadosDemoTarefas;
+            localStorage.setItem('viagens_db', JSON.stringify(viagens));
+            localStorage.setItem('tarefas_db', JSON.stringify(tarefas));
+        } else {
+            viagens = viagensLocal ? JSON.parse(viagensLocal) : [];
+            tarefas = tarefasLocal ? JSON.parse(tarefasLocal) : [];
+        }
     }
+
+    atualizarTabela();
+    carregarTarefas();
 }
 
 const form = document.getElementById('viagemForm');
@@ -99,6 +128,14 @@ const salvarCampoViagem = async (index, campo, valor) => {
             return;
         }
         viagem[campo] = novoValor;
+    }
+
+    if (usingLocalFallback) {
+        viagens[index] = viagem;
+        localStorage.setItem('viagens_db', JSON.stringify(viagens));
+        atualizarTabela();
+        fecharMenuEdicao();
+        return;
     }
 
     try {
@@ -203,10 +240,16 @@ const criarElementoViagem = (viagem) => {
         <td><button type="button" class="btn-excluir-viagem" title="Excluir viagem" aria-label="Excluir viagem"></button></td>
     `;
 
-    const btnExcluir = tr.querySelector('.btn-excluir-viagem');
     btnExcluir.addEventListener('click', async () => {
         const confirmar = confirm(`Deseja excluir a viagem de ${viagem.nome} para ${viagem.destino}?`);
         if (!confirmar) return;
+
+        if (usingLocalFallback) {
+            viagens = viagens.filter(v => v.id !== viagem.id);
+            localStorage.setItem('viagens_db', JSON.stringify(viagens));
+            tr.remove();
+            return;
+        }
 
         try {
             const res = await fetch(`${API_URL}/viagens/${viagem.id}`, { method: 'DELETE' });
@@ -252,6 +295,15 @@ const criarElementoTarefa = (tarefa) => {
         span.style.textDecoration = e.target.checked ? 'line-through' : 'none';
         
         tarefa.concluida = e.target.checked;
+        if (usingLocalFallback) {
+            const tIndex = tarefas.findIndex(t => t.id === tarefa.id);
+            if (tIndex !== -1) {
+                tarefas[tIndex] = tarefa;
+                localStorage.setItem('tarefas_db', JSON.stringify(tarefas));
+            }
+            return;
+        }
+
         try {
             await fetch(`${API_URL}/tarefas/${tarefa.id}`, {
                 method: 'PUT',
@@ -265,6 +317,13 @@ const criarElementoTarefa = (tarefa) => {
     
     trashBtn.addEventListener('click', async (e) => {
         e.stopPropagation();
+        if (usingLocalFallback) {
+            tarefas = tarefas.filter(t => t.id !== tarefa.id);
+            localStorage.setItem('tarefas_db', JSON.stringify(tarefas));
+            li.remove();
+            return;
+        }
+
         try {
             const res = await fetch(`${API_URL}/tarefas/${tarefa.id}`, { method: 'DELETE' });
             if (res.ok) {
@@ -299,6 +358,15 @@ form.addEventListener('submit', async (e) => {
         valor: parseFloat(document.getElementById('valor').value)
     };
 
+    if (usingLocalFallback) {
+        novaViagem.id = Date.now();
+        viagens.push(novaViagem);
+        localStorage.setItem('viagens_db', JSON.stringify(viagens));
+        form.reset();
+        tabelaBody.appendChild(criarElementoViagem(novaViagem));
+        return;
+    }
+
     try {
         const res = await fetch(`${API_URL}/viagens`, {
             method: 'POST',
@@ -327,6 +395,15 @@ const adicionarTarefa = async () => {
     }
 
     const novaTarefa = { texto: texto, concluida: false };
+
+    if (usingLocalFallback) {
+        novaTarefa.id = Date.now();
+        tarefas.push(novaTarefa);
+        localStorage.setItem('tarefas_db', JSON.stringify(tarefas));
+        inputTarefa.value = '';
+        listaTarefas.appendChild(criarElementoTarefa(novaTarefa));
+        return;
+    }
 
     try {
         const res = await fetch(`${API_URL}/tarefas`, {
@@ -426,6 +503,18 @@ const reiniciarTudo = async () => {
     
     if (!confirmacao) return;
     
+    if (usingLocalFallback) {
+        viagens = [];
+        tarefas = [];
+        localStorage.removeItem('viagens_db');
+        localStorage.removeItem('tarefas_db');
+        atualizarTabela();
+        carregarTarefas();
+        if (form) form.reset();
+        alert('✅ Todos os dados locais foram reiniciados!');
+        return;
+    }
+
     try {
         const res = await fetch(`${API_URL}/sistema/reiniciar`, {
             method: 'POST',

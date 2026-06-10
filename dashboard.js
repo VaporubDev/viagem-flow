@@ -46,20 +46,20 @@ async function carregarDashboard() {
         const response = await fetch(`${API_URL}/viagens`);
         if (!response.ok) throw new Error('Falha ao buscar viagens');
         dadosViagens = await response.json();
-
-        if (dadosViagens.length === 0) {
-            exibirDadosVazios();
-            return;
-        }
-
-        renderizarMetricas(dadosViagens);
-        renderizarGraficos(dadosViagens);
     } catch (error) {
-        console.error('Erro ao carregar dados do dashboard:', error);
-        elTotalInvestido.textContent = 'Erro ao carregar';
-        elPendentes.textContent = 'Erro ao carregar';
-        elDestinoMaisVisitado.textContent = 'Erro ao carregar';
+        console.warn('Backend offline no dashboard. Carregando dados locais do localStorage.', error);
+        
+        const viagensLocal = localStorage.getItem('viagens_db');
+        dadosViagens = viagensLocal ? JSON.parse(viagensLocal) : [];
     }
+
+    if (dadosViagens.length === 0) {
+        exibirDadosVazios();
+        return;
+    }
+
+    renderizarMetricas(dadosViagens);
+    renderizarGraficos(dadosViagens);
 }
 
 function renderizarMetricas(viagens) {
