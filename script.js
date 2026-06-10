@@ -354,39 +354,62 @@ inputTarefa.addEventListener('keypress', (e) => {
     }
 });
 
-const exportarParaExcel = () => {
+const exportarParaExcel = async () => {
     if (viagens.length === 0) {
         alert('Não há viagens cadastradas para exportar.');
         return;
     }
 
-    let csvContent = "Passageiro;Destino;Data de Ida;Data de Volta;Hotel;Status;Valor\n";
+    const workbook = new ExcelJS.Workbook();
+    const sheet = workbook.addWorksheet('Relatório de Viagens');
+
+    sheet.columns = [
+        { header: 'Passageiro', key: 'nome', width: 25 },
+        { header: 'Destino', key: 'destino', width: 25 },
+        { header: 'Data de Ida', key: 'ida', width: 15 },
+        { header: 'Data de Volta', key: 'volta', width: 15 },
+        { header: 'Hotel', key: 'hotel', width: 30 },
+        { header: 'Status', key: 'status', width: 15 },
+        { header: 'Valor (R$)', key: 'valor', width: 15 }
+    ];
+
+    const headerRow = sheet.getRow(1);
+    headerRow.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+    headerRow.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FF2563EB' }
+    };
+    headerRow.alignment = { vertical: 'middle', horizontal: 'center' };
 
     viagens.forEach(v => {
-        const linha = [
-            v.nome,
-            v.destino,
-            formatarData(v.dataIda),
-            formatarData(v.dataVolta),
-            v.hotel,
-            v.status,
-            v.valor.toString().replace('.', ',')
-        ].join(";");
+        const row = sheet.addRow({
+            nome: v.nome,
+            destino: v.destino,
+            ida: formatarData(v.dataIda),
+            volta: formatarData(v.dataVolta),
+            hotel: v.hotel,
+            status: v.status,
+            valor: v.valor
+        });
         
-        csvContent += linha + "\n";
+        row.getCell('valor').numFmt = '"R$" #,##0.00';
+        row.getCell('ida').alignment = { horizontal: 'center' };
+        row.getCell('volta').alignment = { horizontal: 'center' };
+        row.getCell('status').alignment = { horizontal: 'center' };
     });
 
-    const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const url = window.URL.createObjectURL(blob);
     
-    const link = document.createElement("a");
-    link.setAttribute("href", url);
-    link.setAttribute("download", `relatorio_viagens_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.csv`);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `relatorio_viagens_${new Date().toISOString().slice(0,10)}.xlsx`;
     document.body.appendChild(link);
-    
     link.click();
     document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    window.URL.revokeObjectURL(url);
     
     alert('Exportação realizada com sucesso!');
 };
