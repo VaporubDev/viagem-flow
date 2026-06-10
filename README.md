@@ -71,4 +71,13 @@ A API será iniciada e estará escutando no endereço `http://localhost:5144`.
 
 Basta abrir o arquivo `index.html` diretamente em seu navegador favorito, ou utilizar uma extensão como o _Live Server_ do VS Code para executá-lo sob um servidor local.
 
+### 🌐 Modo de Demonstração / Preview (Hospedagem Estática)
+
+Para facilitar testes rápidos ou visualização em portfólios, a aplicação conta com um **sistema de Fallback Automático**. 
+Caso a página seja aberta diretamente pelo navegador (como no **GitHub Pages**) sem o backend C# ativo, o sistema entrará automaticamente no **Modo Demo**:
+- A tela será carregada com **dados fictícios pré-definidos** para demonstração de uso.
+- As interações de cadastro, edição, exclusão e checklist funcionarão normalmente salvando os dados temporariamente no `localStorage` do seu navegador.
+- O dashboard e os gráficos de métricas atualizarão em tempo real.
+- A exportação para Excel estará totalmente ativa.
+
 ---
