@@ -24,50 +24,60 @@ const fetchWithTimeout = async (resource, options = {}) => {
 };
 
 async function carregarDados() {
-    try {
-        const [viagensRes, tarefasRes] = await Promise.all([
-            fetchWithTimeout(`${API_URL}/viagens`),
-            fetchWithTimeout(`${API_URL}/tarefas`)
-        ]);
-
-        if (viagensRes.ok) viagens = await viagensRes.json();
-        if (tarefasRes.ok) tarefas = await tarefasRes.json();
-        
-        usingLocalFallback = false;
-        console.log('Conectado à API backend SQLite.');
-    } catch (error) {
-        console.warn('Backend offline. Usando fallback de localStorage local.', error);
-        usingLocalFallback = true;
-        
-        let viagensLocal = localStorage.getItem('viagens_db');
-        let tarefasLocal = localStorage.getItem('tarefas_db');
-        
-        if (!viagensLocal) {
-            const dadosDemoViagens = [
-                { id: 1, nome: "Cintia Souza", destino: "Paris, França", dataIda: "2026-09-15", dataVolta: "2026-09-25", hotel: "Hôtel Le Bristol", status: "Pago", valor: 12500.00 },
-                { id: 2, nome: "Cintia Souza", destino: "Orlando, EUA", dataIda: "2026-12-05", dataVolta: "2026-12-20", hotel: "Cabana Bay Resort", status: "Pendente", valor: 8900.00 },
-                { id: 3, nome: "Lucas Souza", destino: "Gramado, Brasil", dataIda: "2026-07-10", dataVolta: "2026-07-15", hotel: "Hotel Alpestre", status: "Pago", valor: 3200.00 }
-            ];
-            localStorage.setItem('viagens_db', JSON.stringify(dadosDemoViagens));
-            viagensLocal = JSON.stringify(dadosDemoViagens);
-        }
-        
-        if (!tarefasLocal) {
-            const dadosDemoTarefas = [
-                { id: 1, texto: "Renovar passaporte", concluida: true },
-                { id: 2, texto: "Comprar moedas estrangeiras", concluida: false },
-                { id: 3, texto: "Fazer seguro viagem", concluida: false }
-            ];
-            localStorage.setItem('tarefas_db', JSON.stringify(dadosDemoTarefas));
-            tarefasLocal = JSON.stringify(dadosDemoTarefas);
-        }
-        
-        viagens = JSON.parse(viagensLocal);
-        tarefas = JSON.parse(tarefasLocal);
+    // 1. Carregar dados locais imediatamente para evitar lag visual
+    let viagensLocal = localStorage.getItem('viagens_db');
+    let tarefasLocal = localStorage.getItem('tarefas_db');
+    
+    if (!viagensLocal) {
+        const dadosDemoViagens = [
+            { id: 1, nome: "Cintia Souza", destino: "Paris, França", dataIda: "2026-09-15", dataVolta: "2026-09-25", hotel: "Hôtel Le Bristol", status: "Pago", valor: 12500.00 },
+            { id: 2, nome: "Cintia Souza", destino: "Orlando, EUA", dataIda: "2026-12-05", dataVolta: "2026-12-20", hotel: "Cabana Bay Resort", status: "Pendente", valor: 8900.00 },
+            { id: 3, nome: "Lucas Souza", destino: "Gramado, Brasil", dataIda: "2026-07-10", dataVolta: "2026-07-15", hotel: "Hotel Alpestre", status: "Pago", valor: 3200.00 }
+        ];
+        localStorage.setItem('viagens_db', JSON.stringify(dadosDemoViagens));
+        viagensLocal = JSON.stringify(dadosDemoViagens);
     }
-
+    
+    if (!tarefasLocal) {
+        const dadosDemoTarefas = [
+            { id: 1, texto: "Renovar passaporte", concluida: true },
+            { id: 2, texto: "Comprar moedas estrangeiras", concluida: false },
+            { id: 3, texto: "Fazer seguro viagem", concluida: false }
+        ];
+        localStorage.setItem('tarefas_db', JSON.stringify(dadosDemoTarefas));
+        tarefasLocal = JSON.stringify(dadosDemoTarefas);
+    }
+    
+    viagens = JSON.parse(viagensLocal);
+    tarefas = JSON.parse(tarefasLocal);
+    usingLocalFallback = true; // Default como offline-first
+    
+    // Renderiza instantaneamente (0ms de lag)
     atualizarTabela();
     carregarTarefas();
+
+    // 2. Tenta atualizar dados em segundo plano (background)
+    try {
+        const [viagensRes, tarefasRes] = await Promise.all([
+            fetchWithTimeout(`${API_URL}/viagens`, { timeout: 150 }), // Timeout menor para localhost rápido
+            fetchWithTimeout(`${API_URL}/tarefas`, { timeout: 150 })
+        ]);
+        
+        if (viagensRes.ok && tarefasRes.ok) {
+            viagens = await viagensRes.json();
+            tarefas = await tarefasRes.json();
+            usingLocalFallback = false;
+            localStorage.setItem('viagens_db', JSON.stringify(viagens));
+            localStorage.setItem('tarefas_db', JSON.stringify(tarefas));
+            console.log('Conectado à API backend SQLite. Dados sincronizados.');
+            
+            // Sincroniza e re-renderiza se houver novos dados do servidor
+            atualizarTabela();
+            carregarTarefas();
+        }
+    } catch (error) {
+        console.warn('Mantendo modo offline (localStorage). API indisponível:', error.message || error);
+    }
 }
 
 const form = document.getElementById('viagemForm');

@@ -61,24 +61,31 @@ async function carregarDashboard() {
         atualizarBotaoTema();
     }
 
-    try {
-        const response = await fetchWithTimeout(`${API_URL}/viagens`);
-        if (!response.ok) throw new Error('Falha ao buscar viagens');
-        dadosViagens = await response.json();
-    } catch (error) {
-        console.warn('Backend offline no dashboard. Carregando dados locais do localStorage.', error);
-        
-        const viagensLocal = localStorage.getItem('viagens_db');
-        dadosViagens = viagensLocal ? JSON.parse(viagensLocal) : [];
-    }
+    // 1. Carregar local imediatamente para renderização instantânea (0ms delay)
+    const viagensLocal = localStorage.getItem('viagens_db');
+    dadosViagens = viagensLocal ? JSON.parse(viagensLocal) : [];
 
-    if (dadosViagens.length === 0) {
+    if (dadosViagens.length > 0) {
+        renderizarMetricas(dadosViagens);
+        renderizarGraficos(dadosViagens);
+    } else {
         exibirDadosVazios();
-        return;
     }
 
-    renderizarMetricas(dadosViagens);
-    renderizarGraficos(dadosViagens);
+    // 2. Buscar da API em segundo plano para sincronizar
+    try {
+        const response = await fetchWithTimeout(`${API_URL}/viagens`, { timeout: 150 });
+        if (response.ok) {
+            dadosViagens = await response.json();
+            localStorage.setItem('viagens_db', JSON.stringify(dadosViagens));
+            
+            // Re-renderiza com os dados atualizados do servidor
+            renderizarMetricas(dadosViagens);
+            renderizarGraficos(dadosViagens);
+        }
+    } catch (error) {
+        console.warn('Backend offline no dashboard. Mantendo dados locais do localStorage.', error.message || error);
+    }
 }
 
 function renderizarMetricas(viagens) {
