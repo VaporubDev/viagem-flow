@@ -3,14 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestão de Viagens</title>
+    <title>FlyEasy | Gestão de Viagens</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✈️</text></svg>">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="dark.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>✈️ Gestão de Viagens</h1>
+            <div class="header-content">
+                <h1>✈️ <span>FlyEasy</span></h1>
+            </div>
             <button id="btnTema" class="btn-tema" type="button" aria-label="Ativar modo escuro">🌙</button>
         </header>
 
@@ -59,13 +62,13 @@
             </section>
 
             <section class="card checklist-section">
-                <h2>✅ Checklist de Tarefas</h2>
+                <h2>Checklist de Tarefas</h2>
                 <div class="checklist-input">
                     <input type="text" id="novaTarefa" placeholder="Adicionar nova tarefa...">
-                    <button id="btnAdicionarTarefa" class="btn-secondary">+</button>
+                    <button type="button" id="btnAdicionarTarefa" class="btn-secondary">+</button>
                 </div>
                 <ul id="listaTarefas">
-                    </ul>
+                </ul>
             </section>
         </div>
 
@@ -87,21 +90,21 @@
                         </tr>
                     </thead>
                     <tbody>
-                        </tbody>
+                    </tbody>
                 </table>
             </div>
         </section>
         <footer class="taskbar">
             <div class="taskbar-content">
                 <div class="taskbar-title">
-                    📋 Ações do Sistema
+                    Ações do Sistema
                 </div>
                 <div class="taskbar-buttons">
                     <button id="btnExportarFooter" class="btn-excel">
-                        📊 Exportar para Excel
+                        Exportar para Excel
                     </button>
                     <button id="btnReiniciar" class="btn-danger">
-                        🗑️ Reiniciar Tudo
+                        Reiniciar
                     </button>
                 </div>
             </div>

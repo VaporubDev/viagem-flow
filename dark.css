@@ -1,53 +1,124 @@
 body.dark-mode {
-    --primary-color: #60a5fa;
-    --primary-hover: #3b82f6;
+    --primary-color: #a78bfa;
+    --primary-hover: #c084fc;
+    --primary-light: #2e1065;
     --success-color: #34d399;
     --success-hover: #10b981;
-    --bg-color: #111827;
-    --card-bg: #1f2937;
-    --text-main: #f9fafb;
-    --text-muted: #d1d5db;
-    --border-color: #374151;
+    --bg-color: #0f0a1c;
+    --card-bg: #17122a;
+    --text-main: #f5f3ff;
+    --text-muted: #948fb5;
+    --border-color: #2e2647;
 }
 
 body.dark-mode .card,
 body.dark-mode .taskbar,
 body.dark-mode .btn-tema,
 body.dark-mode .menu-edicao {
-    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 0 1px rgba(167, 139, 250, 0.1);
 }
 
 body.dark-mode input,
 body.dark-mode select {
-    background-color: #111827;
+    background-color: #0f0a1c;
     color: var(--text-main);
+    border-color: var(--border-color);
 }
 
 body.dark-mode input::placeholder {
-    color: #9ca3af;
+    color: #5c5577;
 }
 
 body.dark-mode .celula-editavel:hover {
-    background-color: #273449;
+    background-color: rgba(167, 139, 250, 0.08);
 }
 
 body.dark-mode .status-pago {
-    background-color: #064e3b;
-    color: #a7f3d0;
+    background-color: rgba(16, 185, 129, 0.15);
+    color: #34d399;
+    border: 1px solid rgba(16, 185, 129, 0.3);
 }
 
 body.dark-mode .status-pendente {
-    background-color: #78350f;
-    color: #fde68a;
+    background-color: rgba(245, 158, 11, 0.15);
+    color: #fbbf24;
+    border: 1px solid rgba(245, 158, 11, 0.3);
 }
 
 body.dark-mode .status-cancelado {
-    background-color: #7f1d1d;
-    color: #fecaca;
+    background-color: rgba(239, 68, 68, 0.15);
+    color: #fca5a5;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+body.dark-mode .status-opcao {
+    background-color: #1e1736;
 }
 
 body.dark-mode .status-opcao:hover,
 body.dark-mode .status-opcao.ativo {
-    background-color: #1e3a8a;
-    color: #dbeafe;
+    background-color: var(--primary-light);
+    color: var(--primary-color);
 }
+
+body.dark-mode .btn-secondary {
+    background-color: rgba(167, 139, 250, 0.1);
+    color: var(--primary-color);
+}
+
+body.dark-mode .btn-secondary:hover {
+    background-color: var(--primary-color);
+    color: #0f0a1c;
+}
+
+body.dark-mode .btn-excluir-viagem {
+    background-color: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+}
+
+body.dark-mode .btn-excluir-viagem:hover {
+    background-color: #ef4444;
+    color: white;
+}
+
+body.dark-mode .btn-danger {
+    background-color: rgba(239, 68, 68, 0.15);
+    color: #fca5a5;
+    border-color: rgba(239, 68, 68, 0.2);
+}
+
+body.dark-mode .btn-danger:hover {
+    background-color: #ef4444;
+    color: white;
+}
+
+body.dark-mode .btn-excel {
+    background-color: rgba(16, 185, 129, 0.15);
+    color: #34d399;
+    border-color: rgba(16, 185, 129, 0.2);
+}
+
+body.dark-mode .btn-excel:hover {
+    background-color: #10b981;
+    color: white;
+}
+
+body.dark-mode header h1 span {
+    background: linear-gradient(135deg, #a78bfa 0%, #c084fc 50%, #f472b6 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+body.dark-mode .btn-dashboard {
+    background-color: rgba(167, 139, 250, 0.1);
+    color: var(--primary-color);
+    border-color: var(--border-color);
+}
+
+body.dark-mode .btn-dashboard:hover {
+    background-color: var(--primary-color);
+    color: #0f0a1c;
+    border-color: var(--primary-color);
+}
+

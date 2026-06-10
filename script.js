@@ -1,20 +1,24 @@
-const STORAGE_KEY = 'excel_storage';
+const API_URL = 'http://localhost:5144/api';
 const THEME_KEY = 'excel_theme';
 let viagens = [];
 let tarefas = [];
 
-function loadFromStorage() {
-    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-    viagens = saved.viagens || [];
-    tarefas = saved.tarefas || [];
-}
+async function carregarDados() {
+    try {
+        const [viagensRes, tarefasRes] = await Promise.all([
+            fetch(`${API_URL}/viagens`),
+            fetch(`${API_URL}/tarefas`)
+        ]);
 
-function saveToStorage() {
-    const data = { viagens, tarefas };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-}
+        if (viagensRes.ok) viagens = await viagensRes.json();
+        if (tarefasRes.ok) tarefas = await tarefasRes.json();
 
-loadFromStorage();
+        atualizarTabela();
+        carregarTarefas();
+    } catch (error) {
+        console.error('Erro ao carregar dados da API:', error);
+    }
+}
 
 const form = document.getElementById('viagemForm');
 const tabelaBody = document.querySelector('#tabelaViagens tbody');
@@ -78,25 +82,40 @@ const fecharMenuEdicao = () => {
     }
 };
 
-const salvarCampoViagem = (index, campo, valor) => {
+const salvarCampoViagem = async (index, campo, valor) => {
+    const viagem = { ...viagens[index] };
+
     if (campo === 'valor') {
         const valorNumerico = parseFloat(String(valor).replace(',', '.'));
         if (Number.isNaN(valorNumerico)) {
             alert('Digite um valor válido.');
             return;
         }
-        viagens[index][campo] = valorNumerico;
+        viagem[campo] = valorNumerico;
     } else {
         const novoValor = String(valor).trim();
         if (novoValor === '') {
             alert('Este campo não pode ficar vazio.');
             return;
         }
-        viagens[index][campo] = novoValor;
+        viagem[campo] = novoValor;
     }
 
-    saveToStorage();
-    atualizarTabela();
+    try {
+        const res = await fetch(`${API_URL}/viagens/${viagem.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(viagem)
+        });
+        
+        if (res.ok) {
+            viagens[index] = viagem;
+            atualizarTabela();
+        }
+    } catch (error) {
+        console.error('Erro ao atualizar viagem:', error);
+    }
+    
     fecharMenuEdicao();
 };
 
@@ -171,85 +190,103 @@ const abrirMenuEdicao = (event, index, campo) => {
     if (input) input.focus();
 };
 
+const criarElementoViagem = (viagem) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+        <td class="celula-editavel" data-campo="nome">${viagem.nome}</td>
+        <td class="celula-editavel" data-campo="destino">${viagem.destino}</td>
+        <td class="celula-editavel" data-campo="dataIda">${formatarData(viagem.dataIda)}</td>
+        <td class="celula-editavel" data-campo="dataVolta">${formatarData(viagem.dataVolta)}</td>
+        <td class="celula-editavel" data-campo="hotel">${viagem.hotel}</td>
+        <td class="celula-editavel" data-campo="status"><span class="status-badge ${getStatusClass(viagem.status)}">${viagem.status}</span></td>
+        <td class="celula-editavel" data-campo="valor">${formatarMoeda(viagem.valor)}</td>
+        <td><button type="button" class="btn-excluir-viagem" title="Excluir viagem" aria-label="Excluir viagem"></button></td>
+    `;
+
+    const btnExcluir = tr.querySelector('.btn-excluir-viagem');
+    btnExcluir.addEventListener('click', async () => {
+        const confirmar = confirm(`Deseja excluir a viagem de ${viagem.nome} para ${viagem.destino}?`);
+        if (!confirmar) return;
+
+        try {
+            const res = await fetch(`${API_URL}/viagens/${viagem.id}`, { method: 'DELETE' });
+            if (res.ok) {
+                viagens = viagens.filter(v => v.id !== viagem.id);
+                tr.remove();
+            }
+        } catch (error) {
+            console.error('Erro ao excluir viagem:', error);
+        }
+    });
+
+    tr.querySelectorAll('.celula-editavel').forEach(celula => {
+        celula.addEventListener('contextmenu', (event) => {
+            const index = viagens.findIndex(v => v.id === viagem.id);
+            abrirMenuEdicao(event, index, celula.dataset.campo);
+        });
+    });
+
+    return tr;
+};
+
 const atualizarTabela = () => {
     tabelaBody.innerHTML = '';
-    
-    viagens.forEach((viagem, index) => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td class="celula-editavel" data-campo="nome">${viagem.nome}</td>
-            <td class="celula-editavel" data-campo="destino">${viagem.destino}</td>
-            <td class="celula-editavel" data-campo="dataIda">${formatarData(viagem.dataIda)}</td>
-            <td class="celula-editavel" data-campo="dataVolta">${formatarData(viagem.dataVolta)}</td>
-            <td class="celula-editavel" data-campo="hotel">${viagem.hotel}</td>
-            <td class="celula-editavel" data-campo="status"><span class="status-badge ${getStatusClass(viagem.status)}">${viagem.status}</span></td>
-            <td class="celula-editavel" data-campo="valor">${formatarMoeda(viagem.valor)}</td>
-            <td><button class="btn-excluir-viagem" title="Excluir viagem" aria-label="Excluir viagem"></button></td>
-        `;
-
-        const btnExcluir = tr.querySelector('.btn-excluir-viagem');
-        btnExcluir.addEventListener('click', () => {
-            const confirmar = confirm(`Deseja excluir a viagem de ${viagem.nome} para ${viagem.destino}?`);
-            if (!confirmar) return;
-
-            viagens.splice(index, 1);
-            saveToStorage();
-            atualizarTabela();
-        });
-
-        tr.querySelectorAll('.celula-editavel').forEach(celula => {
-            celula.addEventListener('contextmenu', (event) => {
-                abrirMenuEdicao(event, index, celula.dataset.campo);
-            });
-        });
-
-        tabelaBody.appendChild(tr);
+    viagens.forEach(viagem => {
+        tabelaBody.appendChild(criarElementoViagem(viagem));
     });
+};
+
+const criarElementoTarefa = (tarefa) => {
+    const li = document.createElement('li');
+    li.innerHTML = `
+        <input type="checkbox" ${tarefa.concluida ? 'checked' : ''}>
+        <span style="text-decoration: ${tarefa.concluida ? 'line-through' : 'none'}">${tarefa.texto}</span>
+        <button type="button" class="trash">✖</button>
+    `;
+    
+    const checkbox = li.querySelector('input[type="checkbox"]');
+    const trashBtn = li.querySelector('.trash');
+    
+    checkbox.addEventListener('change', async (e) => {
+        const span = li.querySelector('span');
+        span.style.textDecoration = e.target.checked ? 'line-through' : 'none';
+        
+        tarefa.concluida = e.target.checked;
+        try {
+            await fetch(`${API_URL}/tarefas/${tarefa.id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(tarefa)
+            });
+        } catch(error) {
+            console.error('Erro ao atualizar tarefa:', error);
+        }
+    });
+    
+    trashBtn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        try {
+            const res = await fetch(`${API_URL}/tarefas/${tarefa.id}`, { method: 'DELETE' });
+            if (res.ok) {
+                tarefas = tarefas.filter(t => t.id !== tarefa.id);
+                li.remove();
+            }
+        } catch (error) {
+            console.error('Erro ao excluir tarefa:', error);
+        }
+    });
+    
+    return li;
 };
 
 const carregarTarefas = () => {
     listaTarefas.innerHTML = '';
-    tarefas.forEach(texto => {
-        const li = document.createElement('li');
-        li.innerHTML = `
-            <input type="checkbox">
-            <span>${texto}</span>
-            <button class="trash">✖</button>
-        `;
-        
-        const checkbox = li.querySelector('input[type="checkbox"]');
-        const trashBtn = li.querySelector('.trash');
-        
-        const checkboxState = localStorage.getItem(`tarefa_${texto}`);
-        if (checkboxState === 'checked') {
-            checkbox.checked = true;
-            li.querySelector('span').style.textDecoration = 'line-through';
-        }
-        
-        checkbox.addEventListener('change', (e) => {
-            const span = li.querySelector('span');
-            if (e.target.checked) {
-                span.style.textDecoration = 'line-through';
-                localStorage.setItem(`tarefa_${texto}`, 'checked');
-            } else {
-                span.style.textDecoration = 'none';
-                localStorage.setItem(`tarefa_${texto}`, 'unchecked');
-            }
-        });
-        
-        trashBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            tarefas = tarefas.filter(t => t !== texto);
-            localStorage.removeItem(`tarefa_${texto}`);
-            saveToStorage();
-            li.remove();
-        });
-        
-        listaTarefas.appendChild(li);
+    tarefas.forEach(tarefa => {
+        listaTarefas.appendChild(criarElementoTarefa(tarefa));
     });
 };
 
-form.addEventListener('submit', (e) => {
+form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
     const novaViagem = {
@@ -262,59 +299,59 @@ form.addEventListener('submit', (e) => {
         valor: parseFloat(document.getElementById('valor').value)
     };
 
-    viagens.push(novaViagem);
-    atualizarTabela();
-    form.reset();
-    saveToStorage();
+    try {
+        const res = await fetch(`${API_URL}/viagens`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(novaViagem)
+        });
+        
+        if (res.ok) {
+            const viagemSalva = await res.json();
+            viagens.push(viagemSalva);
+            form.reset();
+            tabelaBody.appendChild(criarElementoViagem(viagemSalva));
+        }
+    } catch (error) {
+        console.error('Erro ao cadastrar viagem:', error);
+    }
 });
 
-const adicionarTarefa = () => {
+const adicionarTarefa = async () => {
     const texto = inputTarefa.value.trim();
     if (texto === '') return;
 
-    if (tarefas.includes(texto)) {
+    if (tarefas.some(t => t.texto === texto)) {
         alert('Esta tarefa já existe!');
         return;
     }
 
-    const li = document.createElement('li');
-    li.innerHTML = `
-        <input type="checkbox">
-        <span>${texto}</span>
-        <button class="trash">✖</button>
-    `;
-    
-    const checkbox = li.querySelector('input[type="checkbox"]');
-    const trashBtn = li.querySelector('.trash');
-    
-    checkbox.addEventListener('change', (e) => {
-        const span = li.querySelector('span');
-        if (e.target.checked) {
-            span.style.textDecoration = 'line-through';
-            localStorage.setItem(`tarefa_${texto}`, 'checked');
-        } else {
-            span.style.textDecoration = 'none';
-            localStorage.setItem(`tarefa_${texto}`, 'unchecked');
+    const novaTarefa = { texto: texto, concluida: false };
+
+    try {
+        const res = await fetch(`${API_URL}/tarefas`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(novaTarefa)
+        });
+        
+        if (res.ok) {
+            const tarefaSalva = await res.json();
+            tarefas.push(tarefaSalva);
+            inputTarefa.value = '';
+            listaTarefas.appendChild(criarElementoTarefa(tarefaSalva));
         }
-    });
-    
-    trashBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        tarefas = tarefas.filter(t => t !== texto);
-        localStorage.removeItem(`tarefa_${texto}`);
-        saveToStorage();
-        li.remove();
-    });
-    
-    listaTarefas.appendChild(li);
-    tarefas.push(texto);
-    saveToStorage();
-    inputTarefa.value = '';
+    } catch (error) {
+        console.error('Erro ao cadastrar tarefa:', error);
+    }
 };
 
 btnAdicionarTarefa.addEventListener('click', adicionarTarefa);
 inputTarefa.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') adicionarTarefa();
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        adicionarTarefa();
+    }
 });
 
 const exportarParaExcel = () => {
@@ -354,39 +391,34 @@ const exportarParaExcel = () => {
     alert('Exportação realizada com sucesso!');
 };
 
-const reiniciarTudo = () => {
+const reiniciarTudo = async () => {
     const confirmacao = confirm(
         '⚠️ ATENÇÃO! ⚠️\n\n' +
-        'Isso irá apagar TODOS os dados:\n' +
+        'Isso irá apagar TODOS os dados do banco de dados:\n' +
         '• Todas as viagens cadastradas\n' +
-        '• Todas as tarefas do checklist\n' +
-        '• Todas as configurações salvas\n\n' +
+        '• Todas as tarefas do checklist\n\n' +
         'Esta ação não pode ser desfeita!\n\n' +
         'Tem certeza que deseja continuar?'
     );
     
     if (!confirmacao) return;
     
-    viagens = [];
-    tarefas = [];
-    
-    localStorage.removeItem(STORAGE_KEY);
-    
-    const keysToRemove = [];
-    for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key && key.startsWith('tarefa_')) {
-            keysToRemove.push(key);
+    try {
+        const res = await fetch(`${API_URL}/sistema/reiniciar`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        
+        if (res.ok) {
+            await carregarDados();
+            if (form) form.reset();
+            alert('✅ Todos os dados foram reiniciados!');
+        } else {
+            alert('Erro ao tentar reiniciar o sistema.');
         }
+    } catch(error) {
+        console.error('Erro ao reiniciar banco:', error);
     }
-    keysToRemove.forEach(key => localStorage.removeItem(key));
-    
-    atualizarTabela();
-    carregarTarefas();
-    
-    if (form) form.reset();
-    
-    alert('✅ Todos os dados foram reiniciados com sucesso!');
 };
 
 if (btnExportarFooter) {
@@ -418,5 +450,4 @@ document.addEventListener('keydown', (event) => {
 });
 
 aplicarTemaSalvo();
-atualizarTabela();
-carregarTarefas();
+carregarDados();
