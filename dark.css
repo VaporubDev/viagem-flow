@@ -1,26 +1,28 @@
 body.dark-mode {
-    --primary-color: #a78bfa;
-    --primary-hover: #c084fc;
-    --primary-light: #2e1065;
+    --primary-color: #b388ff;
+    --primary-hover: #d4a0ff;
+    --primary-light: #1a0040;
+    --accent-color: #8cb4ff;
     --success-color: #34d399;
     --success-hover: #10b981;
-    --bg-color: #0f0a1c;
-    --card-bg: #17122a;
-    --text-main: #f5f3ff;
+    --bg-color: #0b001f;
+    --card-bg: #140033;
+    --text-main: #E6E6FA;
     --text-muted: #948fb5;
-    --border-color: #2e2647;
+    --border-color: #2a1050;
+    --input-bg: #1a0040;
 }
 
 body.dark-mode .card,
 body.dark-mode .taskbar,
 body.dark-mode .btn-tema,
 body.dark-mode .menu-edicao {
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 0 1px rgba(167, 139, 250, 0.1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 0 1px rgba(179, 136, 255, 0.1);
 }
 
 body.dark-mode input,
 body.dark-mode select {
-    background-color: #0f0a1c;
+    background-color: var(--input-bg);
     color: var(--text-main);
     border-color: var(--border-color);
 }
@@ -30,7 +32,7 @@ body.dark-mode input::placeholder {
 }
 
 body.dark-mode .celula-editavel:hover {
-    background-color: rgba(167, 139, 250, 0.08);
+    background-color: rgba(179, 136, 255, 0.08);
 }
 
 body.dark-mode .status-pago {
@@ -62,13 +64,13 @@ body.dark-mode .status-opcao.ativo {
 }
 
 body.dark-mode .btn-secondary {
-    background-color: rgba(167, 139, 250, 0.1);
+    background-color: rgba(179, 136, 255, 0.1);
     color: var(--primary-color);
 }
 
 body.dark-mode .btn-secondary:hover {
     background-color: var(--primary-color);
-    color: #0f0a1c;
+    color: var(--bg-color);
 }
 
 body.dark-mode .btn-excluir-viagem {
@@ -104,21 +106,34 @@ body.dark-mode .btn-excel:hover {
 }
 
 body.dark-mode header h1 span {
-    background: linear-gradient(135deg, #a78bfa 0%, #c084fc 50%, #f472b6 100%);
+    background: linear-gradient(135deg, #b388ff 0%, #d4a0ff 50%, #8cb4ff 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
 body.dark-mode .btn-dashboard {
-    background-color: rgba(167, 139, 250, 0.1);
+    background-color: rgba(179, 136, 255, 0.1);
     color: var(--primary-color);
     border-color: var(--border-color);
 }
 
 body.dark-mode .btn-dashboard:hover {
     background-color: var(--primary-color);
-    color: #0f0a1c;
+    color: var(--bg-color);
     border-color: var(--primary-color);
 }
+
+body.dark-mode .btn-delete-account:hover {
+    background-color: rgba(239, 68, 68, 0.15);
+}
+
+body.dark-mode .slider:before {
+    background-color: #0b001f;
+}
+
+body.dark-mode input:checked + .slider:before {
+    background-color: white;
+}
+
 

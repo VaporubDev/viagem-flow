@@ -4,90 +4,130 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FlyEasy | Gestão de Viagens</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✈️</text></svg>">
+    <link rel="icon" href="plane_icon.png" type="image/png">
+
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="dark.css">
+    <script src="auth_check.js"></script>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <div class="header-content">
-                <h1>✈️ <span>FlyEasy</span></h1>
-                <a href="dashboard.html" class="btn-dashboard">Visão Geral</a>
+    <script>
+        if (localStorage.getItem('excel_theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+        }
+    </script>
+
+    <div class="app-container">
+        <!-- Novo Header com abas e ações -->
+        <header class="app-header">
+            <div class="logo">
+                <img src="plane_icon.png" alt="FlyEasy" class="logo-icon" width="28" height="28">
+                <span class="logo-text">FlyEasy</span>
             </div>
-            <button id="btnTema" class="btn-tema" type="button" aria-label="Ativar modo escuro">🌙</button>
+            <nav class="nav-links">
+                <a href="index.html" class="nav-item active" data-i18n="nav_gestao">Gestão</a>
+                <a href="dashboard.html" class="nav-item" data-i18n="nav_dashboards">Dashboards</a>
+                <a href="settings.html" class="nav-item" data-i18n="nav_settings">Settings</a>
+            </nav>
+            <div class="header-actions">
+                <button type="button" class="btn-nova-viagem-header" id="btnHeaderNovaViagem" data-i18n="btn_nova_viagem">Nova Viagem</button>
+                <button class="icon-btn" id="btnNotificacoes" aria-label="Notificações">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                </button>
+
+                <div class="user-avatar" title="Cintia Souza" id="headerAvatar">
+                    <span class="avatar-fallback" id="headerAvatarFallback">CS</span>
+                </div>
+                <button id="btnTema" class="icon-btn theme-toggle" type="button" aria-label="Ativar modo escuro">🌙</button>
+            </div>
         </header>
 
-        <div class="grid-layout">
+        <!-- Grid Principal do Topo (Formulário + Checklist) -->
+        <main class="grid-layout">
             <section class="card form-section">
-                <h2>Nova Viagem</h2>
+                <h2 data-i18n="new_trip_title">Nova Viagem</h2>
                 <form id="viagemForm">
                     <div class="input-group">
-                        <label for="nome">Nome do Passageiro</label>
-                        <input type="text" id="nome" required>
+                        <label for="nome" data-i18n="label_passenger">Nome do Passageiro</label>
+                        <input type="text" id="nome" placeholder="Ex: Cintia Souza" required>
                     </div>
                     <div class="input-group">
-                        <label for="destino">Destino</label>
-                        <input type="text" id="destino" required>
+                        <label for="destino" data-i18n="label_destino">Destino</label>
+                        <input type="text" id="destino" placeholder="Cidade, País" required>
                     </div>
                     <div class="row">
                         <div class="input-group half">
-                            <label for="dataIda">Data de Ida</label>
+                            <label for="dataIda" data-i18n="label_ida">Data de Ida</label>
                             <input type="date" id="dataIda" required>
                         </div>
                         <div class="input-group half">
-                            <label for="dataVolta">Data de Volta</label>
+                            <label for="dataVolta" data-i18n="label_volta">Data de Volta</label>
                             <input type="date" id="dataVolta" required>
                         </div>
                     </div>
                     <div class="input-group">
-                        <label for="hotel">Nome do Hotel</label>
-                        <input type="text" id="hotel" required>
+                        <label for="hotel" data-i18n="label_hotel">Nome do Hotel</label>
+                        <input type="text" id="hotel" placeholder="Ex: Hotel Le Bristol" required>
                     </div>
                     <div class="row">
-                        <div class="input-group half">
-                            <label for="status">Status do Pagamento</label>
-                            <select id="status" required>
-                                <option value="Pendente">Pendente</option>
-                                <option value="Pago">Pago</option>
-                                <option value="Cancelado">Cancelado</option>
-                            </select>
+                        <div class="input-group status-dropdown-wrapper">
+                            <label for="status" data-i18n="label_status">Status do Pagamento</label>
+                            <div class="select-wrapper">
+                                <select id="status" required>
+                                    <option value="Pendente" data-i18n="opt_pendente">Pendente</option>
+                                    <option value="Pago" data-i18n="opt_pago">Pago</option>
+                                    <option value="Cancelado" data-i18n="opt_cancelado">Cancelado</option>
+                                </select>
+                            </div>
                         </div>
                         <div class="input-group half">
-                            <label for="valor">Valor (R$)</label>
-                            <input type="number" step="0.01" id="valor" required>
+                            <label for="valor" data-i18n="label_valor">Valor (R$)</label>
+                            <input type="number" step="0.01" id="valor" placeholder="0,00" required>
                         </div>
                     </div>
-                    <button type="submit" class="btn-primary">Cadastrar Viagem</button>
+                    <button type="submit" class="btn-primary" data-i18n="btn_cadastrar_viagem">Cadastrar Viagem</button>
                 </form>
             </section>
 
             <section class="card checklist-section">
-                <h2>Checklist de Tarefas</h2>
+                <div class="checklist-header">
+                    <h2 data-i18n="checklist_title">Checklist</h2>
+                    <svg class="checklist-icon-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 11L12 14L22 4" stroke="var(--primary-color)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M21 12V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H16" stroke="var(--primary-color)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
                 <div class="checklist-input">
-                    <input type="text" id="novaTarefa" placeholder="Adicionar nova tarefa...">
-                    <button type="button" id="btnAdicionarTarefa" class="btn-secondary">+</button>
+                    <input type="text" id="novaTarefa" placeholder="Adicionar nova tarefa..." data-i18n-placeholder="placeholder_add_task">
+                    <button type="button" id="btnAdicionarTarefa" class="btn-add-tarefa">+</button>
                 </div>
                 <ul id="listaTarefas">
                 </ul>
             </section>
-        </div>
+        </main>
 
+        <!-- Tabela de Viagens Cadastradas -->
         <section class="card list-section">
             <div class="list-header">
-                <h2>Viagens Cadastradas</h2>
+                <h2 data-i18n="trips_title">Viagens Cadastradas</h2>
+                <button type="button" class="btn-filtrar" id="btnFiltrar">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                    </svg>
+                    <span data-i18n="btn_filtrar">Filtrar</span>
+                </button>
             </div>
             <div class="table-responsive">
                 <table id="tabelaViagens">
                     <thead>
                         <tr>
-                            <th>Passageiro</th>
-                            <th>Destino</th>
-                            <th>Ida</th>
-                            <th>Volta</th>
-                            <th>Hotel</th>
-                            <th>Status</th>
-                            <th>Valor</th>
+                            <th data-i18n="th_passenger">Passageiro</th>
+                            <th data-i18n="th_destino">Destino</th>
+                            <th data-i18n="th_ida">Ida</th>
+                            <th data-i18n="th_volta">Volta</th>
+                            <th data-i18n="th_hotel">Hotel</th>
+                            <th data-i18n="th_status">Status</th>
+                            <th data-i18n="th_valor">Valor</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -95,24 +135,36 @@
                 </table>
             </div>
         </section>
-        <footer class="taskbar">
-            <div class="taskbar-content">
-                <div class="taskbar-title">
-                    Ações do Sistema
-                </div>
-                <div class="taskbar-buttons">
-                    <button id="btnExportarFooter" class="btn-excel">
-                        Exportar para Excel
+
+        <!-- Footer / Ações do Sistema -->
+        <footer class="system-footer">
+            <div class="actions-section">
+                <div class="footer-title" data-i18n="system_actions_title">Ações do Sistema</div>
+                <div class="footer-buttons">
+                    <button id="btnExportarFooter" class="btn-export-excel">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                        <span data-i18n="btn_export_excel">Exportar para Excel</span>
                     </button>
-                    <button id="btnReiniciar" class="btn-danger">
-                        Reiniciar
+                    <button id="btnReiniciar" class="btn-system-reset">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path></svg>
+                        <span data-i18n="btn_reiniciar">Reiniciar</span>
                     </button>
                 </div>
+            </div>
+            <div class="footer-bottom-links">
+                <a href="#" data-i18n="link_privacidade">Privacidade</a>
+                <a href="#" data-i18n="link_termos">Termos</a>
+                <a href="#" data-i18n="link_suporte">Suporte</a>
+                <a href="#" id="btnExportarCSV" data-i18n="link_export_csv">Exportar Dados CSV</a>
+            </div>
+            <div class="footer-copyright" data-i18n="footer_copyright">
+                © 2024 FlyEasy - Gestão de Viagens Aerodinâmica
             </div>
         </footer>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+    <script src="translate.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
