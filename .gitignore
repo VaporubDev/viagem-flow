@@ -1,0 +1,14 @@
+# Visual Studio Code
+.vscode/
+
+# SQLite Database
+*.db
+*.db-shm
+*.db-wal
+
+# .NET Build output
+bin/
+obj/
+
+# Personal notes (opcional, pode ser removido se quiser versionar as anotações)
+anotacoes.md
