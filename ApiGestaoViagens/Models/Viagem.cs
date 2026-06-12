@@ -3,6 +3,7 @@ namespace ApiGestaoViagens.Models;
 public class Viagem
 {
     public int Id { get; set; }
+    public int PerfilId { get; set; }
     public string Nome { get; set; } = string.Empty;
     public string Destino { get; set; } = string.Empty;
     public string DataIda { get; set; } = string.Empty;

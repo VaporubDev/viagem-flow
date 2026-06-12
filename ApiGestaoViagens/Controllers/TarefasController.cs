@@ -17,9 +17,10 @@ public class TarefasController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Tarefa>>> GetTarefas()
+    public async Task<ActionResult<IEnumerable<Tarefa>>> GetTarefas([FromQuery] int perfilId)
     {
-        return await _context.Tarefas.ToListAsync();
+        if (perfilId <= 0) return BadRequest("PerfilId é obrigatório.");
+        return await _context.Tarefas.Where(t => t.PerfilId == perfilId).ToListAsync();
     }
 
     [HttpPost]

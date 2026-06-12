@@ -17,9 +17,10 @@ public class ViagensController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Viagem>>> GetViagens()
+    public async Task<ActionResult<IEnumerable<Viagem>>> GetViagens([FromQuery] int perfilId)
     {
-        return await _context.Viagens.ToListAsync();
+        if (perfilId <= 0) return BadRequest("PerfilId é obrigatório.");
+        return await _context.Viagens.Where(v => v.PerfilId == perfilId).ToListAsync();
     }
 
     [HttpGet("{id}")]
