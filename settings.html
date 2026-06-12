@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlyEasy | Settings</title>
+    <link rel="icon" href="plane_icon.png" type="image/png">
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="dark.css">
+    <script src="auth_check.js"></script>
+</head>
+<body>
+    <script>
+        if (localStorage.getItem('excel_theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+        }
+    </script>
+
+    <div class="app-container">
+        <!-- Unified Header -->
+        <header class="app-header">
+            <div class="logo">
+                <img src="plane_icon.png" alt="FlyEasy" class="logo-icon" width="28" height="28">
+                <span class="logo-text" data-i18n="logo_text">FlyEasy</span>
+            </div>
+            <nav class="nav-links">
+                <a href="index.html" class="nav-item" data-i18n="nav_gestao">Gestão</a>
+                <a href="dashboard.html" class="nav-item" data-i18n="nav_dashboards">Dashboards</a>
+                <a href="settings.html" class="nav-item active" data-i18n="nav_settings">Settings</a>
+            </nav>
+            <div class="header-actions">
+                <button type="button" class="btn-nova-viagem-header" onclick="window.location.href='index.html#viagemForm'" data-i18n="btn_nova_viagem">Nova Viagem</button>
+                <button class="icon-btn" id="btnNotificacoes" aria-label="Notificações">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                </button>
+
+                <div class="user-avatar" title="Cintia Souza" id="headerAvatar">
+                    <span class="avatar-fallback" id="headerAvatarFallback">CS</span>
+                </div>
+                <button id="btnTema" class="icon-btn theme-toggle" type="button" aria-label="Ativar modo escuro">🌙</button>
+            </div>
+        </header>
+
+        <!-- Settings Title Header -->
+        <div class="settings-header">
+            <h1 data-i18n="settings_title">Settings</h1>
+            <p data-i18n="settings_subtitle">Manage your account preferences and system configurations.</p>
+        </div>
+
+        <!-- Settings Main Grid -->
+        <div class="settings-grid">
+            
+            <!-- Left Column: Profile, Security, Notifications -->
+            <div class="settings-left-col">
+                <!-- Profile Card -->
+                <section class="card">
+                    <div class="profile-header-area">
+                        <div class="profile-avatar-container">
+                            <img src="" alt="Avatar" class="profile-avatar" id="profileImage" style="display: none;">
+                            <div class="profile-avatar" id="profileImageFallback" style="background: linear-gradient(135deg, #fbcfe8, #c084fc, #818cf8); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 2.5rem;"></div>
+                            <button class="edit-avatar-btn" id="btnEditAvatar" aria-label="Editar Avatar" type="button">✏️</button>
+                            <input type="file" id="fileAvatarInput" accept="image/*" style="display: none;">
+                        </div>
+                        <div class="profile-title-info">
+                            <h3 id="profileNameDisplay">Marcus Richardson</h3>
+                        </div>
+                    </div>
+
+                    <form id="profileForm">
+                        <div class="row">
+                            <div class="input-group half">
+                                <label for="profileFullName" data-i18n="profile_full_name">Full Name</label>
+                                <input type="text" id="profileFullName" value="Marcus Richardson" required>
+                            </div>
+                            <div class="input-group half">
+                                <label for="profileEmail" data-i18n="profile_email">Email Address</label>
+                                <input type="email" id="profileEmail" value="m.richardson@flyeasy.com" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-group half">
+                                <label for="profilePhone" data-i18n="profile_phone">Phone Number</label>
+                                <input type="text" id="profilePhone" value="+1 (555) 890-2344" required>
+                            </div>
+                            <div class="input-group half">
+                                <label for="profileTimezone" data-i18n="profile_timezone">Timezone</label>
+                                <div class="select-wrapper">
+                                    <select id="profileTimezone">
+                                        <option value="GMT-5" selected data-i18n="opt_timezone_est">Eastern Standard Time (GMT-5)</option>
+                                        <option value="GMT-3" data-i18n="opt_timezone_brt">Brasilia Time (GMT-3)</option>
+                                        <option value="GMT+0" data-i18n="opt_timezone_gmt">Greenwich Mean Time (GMT+0)</option>
+                                        <option value="GMT+1" data-i18n="opt_timezone_cet">Central European Time (GMT+1)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 1rem; align-items: center;">
+                            <button type="submit" class="btn-save-profile" data-i18n="btn_save_changes" style="margin-top: 0;">Save Profile Changes</button>
+                            <button type="button" class="btn-delete-account" id="btnLogoutSettings" style="margin-top: 0; padding: 0.75rem 1.5rem; width: auto;" data-i18n="btn_logout">Logout</button>
+                        </div>
+                    </form>
+                </section>
+
+                <!-- Sub-cards (Security & Notifications) -->
+                <div class="settings-subcards-row">
+                    <!-- Security Card -->
+                    <section class="card settings-subcard">
+                        <div class="settings-subcard-title">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                            </svg>
+                            <span data-i18n="security_title">Security</span>
+                        </div>
+                        <p data-i18n="security_desc">Manage your password and two-factor authentication settings.</p>
+                        <button type="button" class="btn-settings-action" id="btnUpdatePassword" data-i18n="btn_update_password">Update Password</button>
+                    </section>
+
+                    <!-- Notifications Card -->
+                    <section class="card settings-subcard">
+                        <div class="settings-subcard-title">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                            </svg>
+                            <span data-i18n="notifications_title">Notifications</span>
+                        </div>
+                        <p data-i18n="notifications_desc">Choose how you want to be alerted about flight updates.</p>
+                        <button type="button" class="btn-settings-action" id="btnManageAlerts" data-i18n="btn_manage_alerts">Manage Alerts</button>
+                    </section>
+                </div>
+            </div>
+
+            <!-- Right Column: Appearance, Data & Export -->
+            <div class="settings-right-col">
+                <!-- Appearance Card -->
+                <section class="card">
+                    <h2 style="margin-bottom: 1.5rem;" data-i18n="appearance_title">Appearance</h2>
+
+                    <div class="lang-section-title" data-i18n="language_section_title">LANGUAGE</div>
+                    <div class="lang-buttons">
+                        <button type="button" class="lang-btn active" data-lang="en">English</button>
+                        <button type="button" class="lang-btn" data-lang="pt">Português</button>
+                        <button type="button" class="lang-btn" data-lang="es">Español</button>
+                    </div>
+                </section>
+
+                <!-- Data & Export Card -->
+                <section class="card">
+                    <h2 style="margin-bottom: 0.5rem;" data-i18n="data_export_title">Data & Export</h2>
+                    <p class="export-desc" data-i18n="data_export_desc">Export your travel history and report data in preferred formats.</p>
+
+                    <!-- Row 1: Travel Summary -->
+                    <div class="export-item-row">
+                        <div class="export-item-left">
+                            <div class="export-item-icon">
+                                📊
+                            </div>
+                            <div class="export-item-info">
+                                <strong data-i18n="travel_summary">Travel Summary</strong>
+                                <span data-i18n="excel_format">Excel (.xlsx)</span>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-export-download" id="btnDownloadSummary" aria-label="Baixar Excel">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Row 2: Annual Report -->
+                    <div class="export-item-row">
+                        <div class="export-item-left">
+                            <div class="export-item-icon">
+                                📄
+                            </div>
+                            <div class="export-item-info">
+                                <strong data-i18n="annual_report">Annual Report</strong>
+                                <span data-i18n="pdf_format">PDF Document</span>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-export-download" id="btnDownloadReport" aria-label="Baixar PDF">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <button type="button" class="btn-delete-account" id="btnDeleteAccount" data-i18n="btn_delete_account">
+                        🗑️ Delete My Account
+                    </button>
+                </section>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="translate.js"></script>
+    <script src="settings.js"></script>
+</body>
+</html>
