@@ -4,10 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FlyEasy | Dashboard</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✈️</text></svg>">
+    <link rel="icon" href="plane_icon.png" type="image/png">
+
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="dark.css">
     <link rel="stylesheet" href="dashboard.css">
+    <script src="auth_check.js"></script>
 </head>
 <body>
     <script>
@@ -16,51 +18,66 @@
         }
     </script>
     
-    <div class="container">
-        <header class="dashboard-header">
-            <div class="header-content">
-                <h1>📊 <span>FlyEasy Dashboard</span></h1>
-                <a href="index.html" class="btn-dashboard">Voltar para Viagens</a>
+    <div class="app-container">
+        <header class="app-header">
+            <div class="logo">
+                <img src="plane_icon.png" alt="FlyEasy" class="logo-icon" width="28" height="28">
+                <span class="logo-text">FlyEasy</span>
             </div>
-            <button id="btnTema" class="btn-tema" type="button" aria-label="Ativar modo escuro">🌙</button>
+            <nav class="nav-links">
+                <a href="index.html" class="nav-item" data-i18n="nav_gestao">Gestão</a>
+                <a href="dashboard.html" class="nav-item active" data-i18n="nav_dashboards">Dashboards</a>
+                <a href="settings.html" class="nav-item" data-i18n="nav_settings">Settings</a>
+            </nav>
+            <div class="header-actions">
+                <button type="button" class="btn-nova-viagem-header" onclick="window.location.href='index.html#viagemForm'" data-i18n="btn_nova_viagem">Nova Viagem</button>
+                <button class="icon-btn" id="btnNotificacoes" aria-label="Notificações">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                </button>
+
+                <div class="user-avatar" title="Cintia Souza" id="headerAvatar">
+                    <span class="avatar-fallback" id="headerAvatarFallback">CS</span>
+                </div>
+                <button id="btnTema" class="icon-btn theme-toggle" type="button" aria-label="Ativar modo escuro">🌙</button>
+            </div>
         </header>
 
         <div class="dashboard-grid">
             <div class="card metric-card">
                 <div class="metric-icon">💰</div>
                 <div class="metric-info">
-                    <h3>Total Investido</h3>
-                    <p id="valTotalInvestido">Carregando...</p>
+                    <h3 data-i18n="metric_total">Total Investido</h3>
+                    <p id="valTotalInvestido" data-i18n="loading">Carregando...</p>
                 </div>
             </div>
 
             <div class="card metric-card">
                 <div class="metric-icon">⏳</div>
                 <div class="metric-info">
-                    <h3>Viagens Pendentes</h3>
-                    <p id="valPendentes">Carregando...</p>
+                    <h3 data-i18n="metric_pendentes">Viagens Pendentes</h3>
+                    <p id="valPendentes" data-i18n="loading">Carregando...</p>
                 </div>
             </div>
 
             <div class="card metric-card">
                 <div class="metric-icon">🗺️</div>
                 <div class="metric-info">
-                    <h3>Destino Mais Visitado</h3>
-                    <p id="valDestinoMaisVisitado">Carregando...</p>
+                    <h3 data-i18n="metric_frequente">Destino Mais Visitado</h3>
+                    <p id="valDestinoMaisVisitado" data-i18n="loading">Carregando...</p>
                 </div>
             </div>
         </div>
 
         <div class="charts-grid">
             <div class="card chart-card">
-                <h2>Status dos Pagamentos</h2>
+                <h2 data-i18n="chart_status_title">Status dos Pagamentos</h2>
                 <div class="chart-container">
                     <canvas id="chartStatus"></canvas>
                 </div>
             </div>
 
             <div class="card chart-card">
-                <h2>Gastos por Destino</h2>
+                <h2 data-i18n="chart_gastos_title">Gastos por Destino</h2>
                 <div class="chart-container">
                     <canvas id="chartGastosDestino"></canvas>
                 </div>
@@ -69,6 +86,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="translate.js"></script>
     <script src="dashboard.js"></script>
 </body>
 </html>

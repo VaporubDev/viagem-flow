@@ -62,8 +62,16 @@ async function carregarDashboard() {
     }
 
     // 1. Carregar local imediatamente para renderização instantânea (0ms delay)
+    const profileStrLocal = localStorage.getItem('flyeasy_profile');
+    const profileLocal = profileStrLocal ? JSON.parse(profileStrLocal) : { id: 1 };
+
     const viagensLocal = localStorage.getItem('viagens_db');
-    dadosViagens = viagensLocal ? JSON.parse(viagensLocal) : [];
+    if (viagensLocal) {
+        const todasViagens = JSON.parse(viagensLocal);
+        dadosViagens = todasViagens.filter(v => v.perfilId === profileLocal.id);
+    } else {
+        dadosViagens = [];
+    }
 
     if (dadosViagens.length > 0) {
         renderizarMetricas(dadosViagens);
@@ -74,7 +82,7 @@ async function carregarDashboard() {
 
     // 2. Buscar da API em segundo plano para sincronizar
     try {
-        const response = await fetchWithTimeout(`${API_URL}/viagens`, { timeout: 150 });
+        const response = await fetchWithTimeout(`${API_URL}/viagens?perfilId=${profileLocal.id}`, { timeout: 150 });
         if (response.ok) {
             dadosViagens = await response.json();
             localStorage.setItem('viagens_db', JSON.stringify(dadosViagens));
@@ -270,5 +278,106 @@ function renderizarGraficos(viagens) {
         }
     });
 }
-
 document.addEventListener('DOMContentLoaded', carregarDashboard);
+
+// Notificações flutuantes no Dashboard
+let menuNotificacoes = null;
+
+const fecharMenuNotificacoes = () => {
+    if (menuNotificacoes) {
+        menuNotificacoes.remove();
+        menuNotificacoes = null;
+    }
+};
+
+const abrirMenuNotificacoes = (event) => {
+    event.stopPropagation();
+    fecharMenuNotificacoes();
+
+    const menu = document.createElement('div');
+    menu.className = 'menu-edicao'; // Reutiliza estilo do menu
+    menu.style.padding = '1.25rem 1.5rem';
+    menu.style.textAlign = 'center';
+    menu.style.width = '260px';
+    
+    const titulo = document.createElement('strong');
+    titulo.textContent = 'Notificações';
+    titulo.style.display = 'block';
+    titulo.style.marginBottom = '0.75rem';
+    menu.appendChild(titulo);
+
+    const mensagem = document.createElement('p');
+    mensagem.textContent = '🔔 Nenhuma notificação por enquanto.';
+    mensagem.style.fontSize = '0.9rem';
+    mensagem.style.color = 'var(--text-muted)';
+    mensagem.style.fontWeight = '600';
+    menu.appendChild(mensagem);
+
+    const appHeader = document.querySelector('.app-header');
+    if (appHeader) {
+        appHeader.appendChild(menu);
+    } else {
+        document.body.appendChild(menu);
+    }
+    menuNotificacoes = menu;
+
+    const rectBtn = event.currentTarget.getBoundingClientRect();
+    const headerRect = appHeader ? appHeader.getBoundingClientRect() : { top: 0, left: 0, right: window.innerWidth };
+    
+    menu.style.position = 'absolute';
+    menu.style.top = `${rectBtn.bottom - headerRect.top}px`;
+    menu.style.left = `${rectBtn.left - headerRect.left}px`;
+
+    const rectMenu = menu.getBoundingClientRect();
+    const limitRight = headerRect.right - headerRect.left;
+    const currentLeft = rectBtn.left - headerRect.left;
+    if (currentLeft + rectMenu.width > limitRight) {
+        menu.style.left = `${limitRight - rectMenu.width - 16}px`;
+    }
+};
+
+const btnNotificacoes = document.getElementById('btnNotificacoes');
+if (btnNotificacoes) {
+    btnNotificacoes.addEventListener('click', abrirMenuNotificacoes);
+}
+
+document.addEventListener('click', (event) => {
+    if (menuNotificacoes && !menuNotificacoes.contains(event.target)) {
+        fecharMenuNotificacoes();
+    }
+});
+
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+        fecharMenuNotificacoes();
+    }
+});
+
+// Update header avatar from saved profile
+const updateHeaderAvatar = () => {
+    const saved = localStorage.getItem('flyeasy_profile');
+    if (saved) {
+        try {
+            const prof = JSON.parse(saved);
+            if (prof.fullName) {
+                const parts = prof.fullName.trim().split(/\s+/);
+                let initials = '';
+                if (parts.length > 1) {
+                    initials = (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+                } else if (parts[0]) {
+                    initials = parts[0].substring(0, 2).toUpperCase();
+                }
+                const fallback = document.getElementById('headerAvatarFallback');
+                if (fallback) fallback.textContent = initials;
+                
+                const container = document.getElementById('headerAvatar');
+                if (container) container.title = prof.fullName;
+            }
+        } catch(e) {
+            console.error(e);
+        }
+    }
+};
+document.addEventListener('DOMContentLoaded', updateHeaderAvatar);
+updateHeaderAvatar();
+

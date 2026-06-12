@@ -28,11 +28,14 @@ async function carregarDados() {
     let viagensLocal = localStorage.getItem('viagens_db');
     let tarefasLocal = localStorage.getItem('tarefas_db');
     
+    const profileStrLocal = localStorage.getItem('flyeasy_profile');
+    const profileLocal = profileStrLocal ? JSON.parse(profileStrLocal) : { id: 1 };
+    
     if (!viagensLocal) {
         const dadosDemoViagens = [
-            { id: 1, nome: "Cintia Souza", destino: "Paris, França", dataIda: "2026-09-15", dataVolta: "2026-09-25", hotel: "Hôtel Le Bristol", status: "Pago", valor: 12500.00 },
-            { id: 2, nome: "Cintia Souza", destino: "Orlando, EUA", dataIda: "2026-12-05", dataVolta: "2026-12-20", hotel: "Cabana Bay Resort", status: "Pendente", valor: 8900.00 },
-            { id: 3, nome: "Lucas Souza", destino: "Gramado, Brasil", dataIda: "2026-07-10", dataVolta: "2026-07-15", hotel: "Hotel Alpestre", status: "Pago", valor: 3200.00 }
+            { id: 1, perfilId: profileLocal.id, nome: "Cintia Souza", destino: "Paris, França", dataIda: "2026-09-15", dataVolta: "2026-09-25", hotel: "Hôtel Le Bristol", status: "Pago", valor: 12500.00 },
+            { id: 2, perfilId: profileLocal.id, nome: "Cintia Souza", destino: "Orlando, EUA", dataIda: "2026-12-05", dataVolta: "2026-12-20", hotel: "Cabana Bay Resort", status: "Pendente", valor: 8900.00 },
+            { id: 3, perfilId: profileLocal.id, nome: "Lucas Souza", destino: "Gramado, Brasil", dataIda: "2026-07-10", dataVolta: "2026-07-15", hotel: "Hotel Alpestre", status: "Pago", valor: 3200.00 }
         ];
         localStorage.setItem('viagens_db', JSON.stringify(dadosDemoViagens));
         viagensLocal = JSON.stringify(dadosDemoViagens);
@@ -40,16 +43,20 @@ async function carregarDados() {
     
     if (!tarefasLocal) {
         const dadosDemoTarefas = [
-            { id: 1, texto: "Renovar passaporte", concluida: true },
-            { id: 2, texto: "Comprar moedas estrangeiras", concluida: false },
-            { id: 3, texto: "Fazer seguro viagem", concluida: false }
+            { id: 1, perfilId: profileLocal.id, texto: "Renovar passaporte", concluida: true },
+            { id: 2, perfilId: profileLocal.id, texto: "Comprar moedas estrangeiras", concluida: false },
+            { id: 3, perfilId: profileLocal.id, texto: "Fazer seguro viagem", concluida: false }
         ];
         localStorage.setItem('tarefas_db', JSON.stringify(dadosDemoTarefas));
         tarefasLocal = JSON.stringify(dadosDemoTarefas);
     }
     
-    viagens = JSON.parse(viagensLocal);
-    tarefas = JSON.parse(tarefasLocal);
+    // Filtrar dados locais pelo usuário atual
+    const todasViagens = JSON.parse(viagensLocal);
+    const todasTarefas = JSON.parse(tarefasLocal);
+    viagens = todasViagens.filter(v => v.perfilId === profileLocal.id);
+    tarefas = todasTarefas.filter(t => t.perfilId === profileLocal.id);
+    
     usingLocalFallback = true; // Default como offline-first
     
     // Renderiza instantaneamente (0ms de lag)
@@ -59,8 +66,8 @@ async function carregarDados() {
     // 2. Tenta atualizar dados em segundo plano (background)
     try {
         const [viagensRes, tarefasRes] = await Promise.all([
-            fetchWithTimeout(`${API_URL}/viagens`, { timeout: 150 }), // Timeout menor para localhost rápido
-            fetchWithTimeout(`${API_URL}/tarefas`, { timeout: 150 })
+            fetchWithTimeout(`${API_URL}/viagens?perfilId=${profileLocal.id}`, { timeout: 150 }),
+            fetchWithTimeout(`${API_URL}/tarefas?perfilId=${profileLocal.id}`, { timeout: 150 })
         ]);
         
         if (viagensRes.ok && tarefasRes.ok) {
@@ -90,7 +97,6 @@ const listaTarefas = document.getElementById('listaTarefas');
 const btnExportarFooter = document.getElementById('btnExportarFooter');
 const btnReiniciar = document.getElementById('btnReiniciar');
 const btnTema = document.getElementById('btnTema');
-
 
 const atualizarBotaoTema = () => {
     const temaEscuro = document.body.classList.contains('dark-mode');
@@ -123,14 +129,30 @@ const getStatusClass = (status) => {
     return 'status-cancelado';
 };
 
+const getStatusTranslation = (status) => {
+    const lang = localStorage.getItem('flyeasy_lang') || 'en';
+    if (lang === 'pt') return status;
+    if (status === 'Pago') return lang === 'es' ? 'Pagado' : 'Paid';
+    if (status === 'Pendente') return lang === 'es' ? 'Pendiente' : 'Pending';
+    return lang === 'es' ? 'Cancelado' : 'Canceled';
+};
+
+const getLabelTranslation = (key) => {
+    const lang = localStorage.getItem('flyeasy_lang') || 'en';
+    if (typeof translations !== 'undefined' && translations[lang] && translations[lang][key]) {
+        return translations[lang][key];
+    }
+    return key;
+};
+
 const camposViagem = {
-    nome: { label: 'Passageiro', tipo: 'text' },
-    destino: { label: 'Destino', tipo: 'text' },
-    dataIda: { label: 'Data de Ida', tipo: 'date' },
-    dataVolta: { label: 'Data de Volta', tipo: 'date' },
-    hotel: { label: 'Hotel', tipo: 'text' },
-    status: { label: 'Status', tipo: 'status' },
-    valor: { label: 'Valor', tipo: 'number' }
+    nome: { labelKey: 'th_passenger', tipo: 'text' },
+    destino: { labelKey: 'th_destino', tipo: 'text' },
+    dataIda: { labelKey: 'th_ida', tipo: 'date' },
+    dataVolta: { labelKey: 'th_volta', tipo: 'date' },
+    hotel: { labelKey: 'th_hotel', tipo: 'text' },
+    status: { labelKey: 'th_status', tipo: 'status' },
+    valor: { labelKey: 'th_valor', tipo: 'number' }
 };
 
 let menuEdicao = null;
@@ -187,23 +209,26 @@ const salvarCampoViagem = async (index, campo, valor) => {
     fecharMenuEdicao();
 };
 
-const posicionarMenuEdicao = (menu, x, y) => {
-    menu.style.left = `${x}px`;
-    menu.style.top = `${y}px`;
+const posicionarMenuEdicao = (menu, x, y, container) => {
+    const containerRect = container.getBoundingClientRect();
+    menu.style.position = 'absolute';
+    menu.style.left = `${x - containerRect.left}px`;
+    menu.style.top = `${y - containerRect.top}px`;
 
     const rect = menu.getBoundingClientRect();
     const margem = 12;
 
     if (rect.right > window.innerWidth - margem) {
-        menu.style.left = `${window.innerWidth - rect.width - margem}px`;
+        menu.style.left = `${window.innerWidth - rect.width - margem - containerRect.left}px`;
     }
 
     if (rect.bottom > window.innerHeight - margem) {
-        menu.style.top = `${window.innerHeight - rect.height - margem}px`;
+        menu.style.top = `${window.innerHeight - rect.height - margem - containerRect.top}px`;
     }
 };
 
 const abrirMenuEdicao = (event, index, campo) => {
+    event.stopPropagation();
     event.preventDefault();
     fecharMenuEdicao();
 
@@ -213,7 +238,8 @@ const abrirMenuEdicao = (event, index, campo) => {
     menu.className = 'menu-edicao';
 
     const titulo = document.createElement('strong');
-    titulo.textContent = `Editar ${config.label}`;
+    const editLabel = getLabelTranslation('btn_filtrar') === 'Filter' ? 'Edit' : getLabelTranslation('btn_filtrar') === 'Filtrar' ? 'Editar' : 'Editar';
+    titulo.textContent = `${editLabel} ${getLabelTranslation(config.labelKey)}`;
     menu.appendChild(titulo);
 
     if (config.tipo === 'status') {
@@ -221,7 +247,7 @@ const abrirMenuEdicao = (event, index, campo) => {
             const opcao = document.createElement('button');
             opcao.type = 'button';
             opcao.className = status === viagem.status ? 'status-opcao ativo' : 'status-opcao';
-            opcao.textContent = status;
+            opcao.textContent = getStatusTranslation(status);
             opcao.addEventListener('click', () => salvarCampoViagem(index, campo, status));
             menu.appendChild(opcao);
         });
@@ -238,7 +264,7 @@ const abrirMenuEdicao = (event, index, campo) => {
         const salvar = document.createElement('button');
         salvar.type = 'button';
         salvar.className = 'btn-salvar-edicao';
-        salvar.textContent = 'Salvar';
+        salvar.textContent = getLabelTranslation('btn_save_changes') === 'Save Profile Changes' ? 'Save' : getLabelTranslation('btn_save_changes') === 'Salvar Alterações de Perfil' ? 'Salvar' : 'Guardar';
         salvar.addEventListener('click', () => salvarCampoViagem(index, campo, input.value));
 
         input.addEventListener('keydown', (e) => {
@@ -250,9 +276,10 @@ const abrirMenuEdicao = (event, index, campo) => {
         menu.appendChild(salvar);
     }
 
-    document.body.appendChild(menu);
+    const container = event.currentTarget.closest('.list-section') || document.body;
+    container.appendChild(menu);
     menuEdicao = menu;
-    posicionarMenuEdicao(menu, event.clientX, event.clientY);
+    posicionarMenuEdicao(menu, event.clientX, event.clientY, container);
 
     const input = menu.querySelector('input');
     if (input) input.focus();
@@ -266,14 +293,17 @@ const criarElementoViagem = (viagem) => {
         <td class="celula-editavel" data-campo="dataIda">${formatarData(viagem.dataIda)}</td>
         <td class="celula-editavel" data-campo="dataVolta">${formatarData(viagem.dataVolta)}</td>
         <td class="celula-editavel" data-campo="hotel">${viagem.hotel}</td>
-        <td class="celula-editavel" data-campo="status"><span class="status-badge ${getStatusClass(viagem.status)}">${viagem.status}</span></td>
+        <td class="celula-editavel" data-campo="status"><span class="status-badge ${getStatusClass(viagem.status)}">${getStatusTranslation(viagem.status)}</span></td>
         <td class="celula-editavel" data-campo="valor">${formatarMoeda(viagem.valor)}</td>
         <td><button type="button" class="btn-excluir-viagem" title="Excluir viagem" aria-label="Excluir viagem"></button></td>
     `;
 
     const btnExcluir = tr.querySelector('.btn-excluir-viagem');
     btnExcluir.addEventListener('click', async () => {
-        const confirmar = confirm(`Deseja excluir a viagem de ${viagem.nome} para ${viagem.destino}?`);
+        const confirmMsg = getLabelTranslation('btn_filtrar') === 'Filter' 
+            ? `Do you want to delete the trip for ${viagem.nome} to ${viagem.destino}?` 
+            : `Deseja excluir a viagem de ${viagem.nome} para ${viagem.destino}?`;
+        const confirmar = confirm(confirmMsg);
         if (!confirmar) return;
 
         if (usingLocalFallback) {
@@ -304,9 +334,9 @@ const criarElementoViagem = (viagem) => {
     return tr;
 };
 
-const atualizarTabela = () => {
+const atualizarTabela = (dadosParaExibir = viagens) => {
     tabelaBody.innerHTML = '';
-    viagens.forEach(viagem => {
+    dadosParaExibir.forEach(viagem => {
         tabelaBody.appendChild(criarElementoViagem(viagem));
     });
 };
@@ -380,7 +410,12 @@ const carregarTarefas = () => {
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
+    const profileStr = localStorage.getItem('flyeasy_profile');
+    if (!profileStr) return;
+    const profile = JSON.parse(profileStr);
+
     const novaViagem = {
+        perfilId: profile.id,
         nome: document.getElementById('nome').value,
         destino: document.getElementById('destino').value,
         dataIda: document.getElementById('dataIda').value,
@@ -426,7 +461,11 @@ const adicionarTarefa = async () => {
         return;
     }
 
-    const novaTarefa = { texto: texto, concluida: false };
+    const profileStr = localStorage.getItem('flyeasy_profile');
+    if (!profileStr) return;
+    const profile = JSON.parse(profileStr);
+
+    const novaTarefa = { perfilId: profile.id, texto: texto, concluida: false };
 
     if (usingLocalFallback) {
         novaTarefa.id = Date.now();
@@ -595,3 +634,247 @@ document.addEventListener('keydown', (event) => {
 
 aplicarTemaSalvo();
 carregarDados();
+
+const btnHeaderNovaViagem = document.getElementById('btnHeaderNovaViagem');
+if (btnHeaderNovaViagem) {
+    btnHeaderNovaViagem.addEventListener('click', () => {
+        const formSec = document.querySelector('.form-section');
+        if (formSec) {
+            formSec.scrollIntoView({ behavior: 'smooth' });
+            const inputNome = document.getElementById('nome');
+            if (inputNome) inputNome.focus();
+        }
+    });
+}
+
+// Filtro e Ordenação
+let menuFiltro = null;
+
+const fecharMenuFiltro = () => {
+    if (menuFiltro) {
+        menuFiltro.remove();
+        menuFiltro = null;
+    }
+};
+
+const abrirMenuFiltro = (event) => {
+    event.stopPropagation();
+    fecharMenuFiltro();
+    fecharMenuEdicao();
+    fecharMenuNotificacoes();
+
+    const menu = document.createElement('div');
+    menu.className = 'menu-edicao'; // Reutiliza estilo do menu de edição
+    
+    const titulo = document.createElement('strong');
+    titulo.textContent = 'Filtros e Ordenação';
+    menu.appendChild(titulo);
+
+    const opcoes = [
+        {
+            texto: 'Valor: Maior primeiro',
+            acao: () => {
+                const ordenado = [...viagens].sort((a, b) => b.valor - a.valor);
+                atualizarTabela(ordenado);
+            }
+        },
+        {
+            texto: 'Valor: Menor primeiro',
+            acao: () => {
+                const ordenado = [...viagens].sort((a, b) => a.valor - b.valor);
+                atualizarTabela(ordenado);
+            }
+        },
+        {
+            texto: 'Destino mais frequente',
+            acao: () => {
+                const contagem = {};
+                viagens.forEach(v => {
+                    const dest = v.destino || '';
+                    contagem[dest] = (contagem[dest] || 0) + 1;
+                });
+                const ordenado = [...viagens].sort((a, b) => {
+                    const freqA = contagem[a.destino || ''] || 0;
+                    const freqB = contagem[b.destino || ''] || 0;
+                    return freqB - freqA;
+                });
+                atualizarTabela(ordenado);
+            }
+        },
+        {
+            texto: 'Data de Ida: Mais próxima',
+            acao: () => {
+                const ordenado = [...viagens].sort((a, b) => new Date(a.dataIda) - new Date(b.dataIda));
+                atualizarTabela(ordenado);
+            }
+        },
+        {
+            texto: 'Filtrar: Apenas Pago',
+            acao: () => {
+                const filtrado = viagens.filter(v => v.status === 'Pago');
+                atualizarTabela(filtrado);
+            }
+        },
+        {
+            texto: 'Filtrar: Apenas Pendente',
+            acao: () => {
+                const filtrado = viagens.filter(v => v.status === 'Pendente');
+                atualizarTabela(filtrado);
+            }
+        },
+        {
+            texto: 'Limpar filtros / Padrão',
+            acao: () => {
+                atualizarTabela(viagens);
+            }
+        }
+    ];
+
+    opcoes.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'status-opcao';
+        btn.textContent = opt.texto;
+        btn.addEventListener('click', () => {
+            opt.acao();
+            fecharMenuFiltro();
+        });
+        menu.appendChild(btn);
+    });
+
+    const listHeader = document.querySelector('.list-header');
+    listHeader.appendChild(menu);
+    menuFiltro = menu;
+
+    const rectBtn = event.currentTarget.getBoundingClientRect();
+    const headerRect = listHeader.getBoundingClientRect();
+    menu.style.position = 'absolute';
+    menu.style.top = `${rectBtn.bottom - headerRect.top}px`;
+    menu.style.left = `${rectBtn.left - headerRect.left}px`;
+
+    const rectMenu = menu.getBoundingClientRect();
+    if (rectMenu.right > headerRect.right) {
+        menu.style.left = `${headerRect.right - rectMenu.width - 16 - headerRect.left}px`;
+    }
+};
+
+const btnFiltrar = document.getElementById('btnFiltrar');
+if (btnFiltrar) {
+    btnFiltrar.addEventListener('click', abrirMenuFiltro);
+}
+
+document.addEventListener('click', (event) => {
+    if (menuFiltro && !menuFiltro.contains(event.target)) {
+        fecharMenuFiltro();
+    }
+});
+
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+        fecharMenuFiltro();
+    }
+});
+
+// Notificações flutuantes
+let menuNotificacoes = null;
+
+const fecharMenuNotificacoes = () => {
+    if (menuNotificacoes) {
+        menuNotificacoes.remove();
+        menuNotificacoes = null;
+    }
+};
+
+const abrirMenuNotificacoes = (event) => {
+    event.stopPropagation();
+    fecharMenuNotificacoes();
+    fecharMenuEdicao();
+    fecharMenuFiltro();
+
+    const menu = document.createElement('div');
+    menu.className = 'menu-edicao'; // Reutiliza estilo do menu de edição
+    menu.style.padding = '1.25rem 1.5rem';
+    menu.style.textAlign = 'center';
+    menu.style.width = '260px';
+    
+    const titulo = document.createElement('strong');
+    titulo.textContent = 'Notificações';
+    titulo.style.display = 'block';
+    titulo.style.marginBottom = '0.75rem';
+    menu.appendChild(titulo);
+
+    const mensagem = document.createElement('p');
+    mensagem.textContent = '🔔 Nenhuma notificação por enquanto.';
+    mensagem.style.fontSize = '0.9rem';
+    mensagem.style.color = 'var(--text-muted)';
+    mensagem.style.fontWeight = '600';
+    menu.appendChild(mensagem);
+
+    const appHeader = document.querySelector('.app-header');
+    if (appHeader) {
+        appHeader.appendChild(menu);
+    } else {
+        document.body.appendChild(menu);
+    }
+    menuNotificacoes = menu;
+
+    const rectBtn = event.currentTarget.getBoundingClientRect();
+    const headerRect = appHeader ? appHeader.getBoundingClientRect() : { top: 0, left: 0, right: window.innerWidth };
+    
+    menu.style.position = 'absolute';
+    menu.style.top = `${rectBtn.bottom - headerRect.top}px`;
+    menu.style.left = `${rectBtn.left - headerRect.left}px`;
+
+    const rectMenu = menu.getBoundingClientRect();
+    const limitRight = headerRect.right - headerRect.left;
+    const currentLeft = rectBtn.left - headerRect.left;
+    if (currentLeft + rectMenu.width > limitRight) {
+        menu.style.left = `${limitRight - rectMenu.width - 16}px`;
+    }
+};
+
+const btnNotificacoes = document.getElementById('btnNotificacoes');
+if (btnNotificacoes) {
+    btnNotificacoes.addEventListener('click', abrirMenuNotificacoes);
+}
+
+document.addEventListener('click', (event) => {
+    if (menuNotificacoes && !menuNotificacoes.contains(event.target)) {
+        fecharMenuNotificacoes();
+    }
+});
+
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+        fecharMenuNotificacoes();
+    }
+});
+
+// Update header avatar from saved profile
+const updateHeaderAvatar = () => {
+    const saved = localStorage.getItem('flyeasy_profile');
+    if (saved) {
+        try {
+            const prof = JSON.parse(saved);
+            if (prof.fullName) {
+                const parts = prof.fullName.trim().split(/\s+/);
+                let initials = '';
+                if (parts.length > 1) {
+                    initials = (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+                } else if (parts[0]) {
+                    initials = parts[0].substring(0, 2).toUpperCase();
+                }
+                const fallback = document.getElementById('headerAvatarFallback');
+                if (fallback) fallback.textContent = initials;
+                
+                const container = document.getElementById('headerAvatar');
+                if (container) container.title = prof.fullName;
+            }
+        } catch(e) {
+            console.error(e);
+        }
+    }
+};
+document.addEventListener('DOMContentLoaded', updateHeaderAvatar);
+updateHeaderAvatar();
+
