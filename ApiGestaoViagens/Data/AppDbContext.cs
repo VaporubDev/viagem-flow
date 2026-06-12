@@ -9,4 +9,5 @@ public class AppDbContext : DbContext
 
     public DbSet<Viagem> Viagens { get; set; } = null!;
     public DbSet<Tarefa> Tarefas { get; set; } = null!;
+    public DbSet<Perfil> Perfis { get; set; } = null!;
 }

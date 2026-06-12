@@ -26,6 +26,18 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+// Migrate legacy data
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    var primeiroPerfil = context.Perfis.OrderBy(p => p.Id).FirstOrDefault();
+    if (primeiroPerfil != null)
+    {
+        context.Database.ExecuteSqlRaw($"UPDATE Viagens SET PerfilId = {primeiroPerfil.Id} WHERE PerfilId = 0");
+        context.Database.ExecuteSqlRaw($"UPDATE Tarefas SET PerfilId = {primeiroPerfil.Id} WHERE PerfilId = 0");
+    }
+}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

@@ -1,0 +1,308 @@
+const translations = {
+    pt: {
+        logo_text: "FlyEasy",
+        nav_gestao: "Gestão",
+        nav_dashboards: "Dashboards",
+        nav_settings: "Configurações",
+        nav_login: "Login",
+        btn_nova_viagem: "Nova Viagem",
+        
+        // Settings page
+        settings_title: "Configurações",
+        settings_subtitle: "Gerencie as preferências da sua conta e configurações do sistema.",
+        profile_full_name: "Nome Completo",
+        profile_email: "Endereço de E-mail",
+        profile_phone: "Número de Telefone",
+        profile_timezone: "Fuso Horário",
+        btn_save_changes: "Salvar Alterações de Perfil",
+        security_title: "Segurança",
+        security_desc: "Gerencie sua senha e configurações de autenticação de dois fatores.",
+        btn_update_password: "Atualizar Senha",
+        notifications_title: "Notificações",
+        notifications_desc: "Escolha como você deseja ser alertado sobre atualizações de voos.",
+        btn_manage_alerts: "Gerenciar Alertas",
+        appearance_title: "Aparência",
+        language_section_title: "IDIOMA",
+        data_export_title: "Dados & Exportação",
+        data_export_desc: "Exporte seu histórico de viagens e dados de relatórios nos formatos de sua preferência.",
+        travel_summary: "Resumo de Viagem",
+        excel_format: "Excel (.xlsx)",
+        annual_report: "Relatório Anual",
+        pdf_format: "Documento PDF",
+        btn_delete_account: "🗑️ Excluir Minha Conta",
+        promo_tag: "FLYEASY CELULAR",
+        promo_title: "Baixe o aplicativo para gerenciar viagens de qualquer lugar.",
+        opt_timezone_est: "Horário Padrão do Leste (GMT-5)",
+        opt_timezone_brt: "Horário de Brasília (GMT-3)",
+        opt_timezone_gmt: "Horário de Greenwich (GMT+0)",
+        opt_timezone_cet: "Horário da Europa Central (GMT+1)",
+
+        // Index/Gestão page
+        new_trip_title: "Nova Viagem",
+        label_passenger: "Nome do Passageiro",
+        label_destino: "Destino",
+        label_ida: "Data de Ida",
+        label_volta: "Data de Volta",
+        label_hotel: "Nome do Hotel",
+        label_status: "Status do Pagamento",
+        label_valor: "Valor (R$)",
+        btn_cadastrar_viagem: "Cadastrar Viagem",
+        checklist_title: "Checklist",
+        placeholder_add_task: "Adicionar nova tarefa...",
+        trips_title: "Viagens Cadastradas",
+        btn_filtrar: "Filtrar",
+        th_passenger: "Passageiro",
+        th_destino: "Destino",
+        th_ida: "Ida",
+        th_volta: "Volta",
+        th_hotel: "Hotel",
+        th_status: "Status",
+        th_valor: "Valor",
+        opt_pago: "Pago",
+        opt_pendente: "Pendente",
+        opt_cancelado: "Cancelado",
+        system_actions_title: "Ações do Sistema",
+        btn_export_excel: "Exportar para Excel",
+        btn_reiniciar: "Reiniciar",
+        link_privacidade: "Privacidade",
+        link_termos: "Termos",
+        link_suporte: "Suporte",
+        link_export_csv: "Exportar Dados CSV",
+        footer_copyright: "© 2024 FlyEasy - Gestão de Viagens Aerodinâmica",
+
+        // Dashboard page
+        metric_total: "Total Investido",
+        metric_pendentes: "Viagens Pendentes",
+        metric_frequente: "Destino Mais Visitado",
+        chart_status_title: "Status dos Pagamentos",
+        chart_gastos_title: "Gastos por Destino",
+        loading: "Carregando...",
+
+        // Login page
+        login_title: "Acessar Conta",
+        login_subtitle: "Faça login para gerenciar suas viagens e sincronizar dados.",
+        btn_login: "Entrar",
+        label_email: "Endereço de E-mail",
+        label_password: "Senha",
+        no_account: "Não tem uma conta?",
+        register_here: "Registre-se aqui",
+        register_title: "Criar Conta",
+        register_subtitle: "Cadastre-se para começar a organizar suas viagens.",
+        btn_register: "Criar Conta",
+        already_account: "Já tem uma conta?",
+        login_here: "Acesse sua conta aqui"
+    },
+    en: {
+        logo_text: "FlyEasy",
+        nav_gestao: "Management",
+        nav_dashboards: "Dashboards",
+        nav_settings: "Settings",
+        nav_login: "Login",
+        btn_nova_viagem: "New Trip",
+
+        // Settings page
+        settings_title: "Settings",
+        settings_subtitle: "Manage your account preferences and system configurations.",
+        profile_full_name: "Full Name",
+        profile_email: "Email Address",
+        profile_phone: "Phone Number",
+        profile_timezone: "Timezone",
+        btn_save_changes: "Save Profile Changes",
+        security_title: "Security",
+        security_desc: "Manage your password and two-factor authentication settings.",
+        btn_update_password: "Update Password",
+        notifications_title: "Notifications",
+        notifications_desc: "Choose how you want to be alerted about flight updates.",
+        btn_manage_alerts: "Manage Alerts",
+        appearance_title: "Appearance",
+        language_section_title: "LANGUAGE",
+        data_export_title: "Data & Export",
+        data_export_desc: "Export your travel history and report data in preferred formats.",
+        travel_summary: "Travel Summary",
+        excel_format: "Excel (.xlsx)",
+        annual_report: "Annual Report",
+        pdf_format: "PDF Document",
+        btn_delete_account: "🗑️ Delete My Account",
+        promo_tag: "FLYEASY MOBILE",
+        promo_title: "Get the app for on-the-go travel management.",
+        opt_timezone_est: "Eastern Standard Time (GMT-5)",
+        opt_timezone_brt: "Brasilia Time (GMT-3)",
+        opt_timezone_gmt: "Greenwich Mean Time (GMT+0)",
+        opt_timezone_cet: "Central European Time (GMT+1)",
+
+        // Index/Gestão page
+        new_trip_title: "New Trip",
+        label_passenger: "Passenger Name",
+        label_destino: "Destination",
+        label_ida: "Departure Date",
+        label_volta: "Return Date",
+        label_hotel: "Hotel Name",
+        label_status: "Payment Status",
+        label_valor: "Value (R$)",
+        btn_cadastrar_viagem: "Register Trip",
+        checklist_title: "Checklist",
+        placeholder_add_task: "Add new task...",
+        trips_title: "Registered Trips",
+        btn_filtrar: "Filter",
+        th_passenger: "Passenger",
+        th_destino: "Destination",
+        th_ida: "Departure",
+        th_volta: "Return",
+        th_hotel: "Hotel",
+        th_status: "Status",
+        th_valor: "Value",
+        opt_pago: "Paid",
+        opt_pendente: "Pending",
+        opt_cancelado: "Canceled",
+        system_actions_title: "System Actions",
+        btn_export_excel: "Export to Excel",
+        btn_reiniciar: "Reset System",
+        link_privacidade: "Privacy",
+        link_termos: "Terms",
+        link_suporte: "Support",
+        link_export_csv: "Export CSV Data",
+        footer_copyright: "© 2024 FlyEasy - Aerodynamic Travel Management",
+
+        // Dashboard page
+        metric_total: "Total Invested",
+        metric_pendentes: "Pending Trips",
+        metric_frequente: "Most Visited Destination",
+        chart_status_title: "Payment Status",
+        chart_gastos_title: "Expenses by Destination",
+        loading: "Loading...",
+
+        // Login page
+        login_title: "Sign In",
+        login_subtitle: "Log in to manage your trips and sync your preferences.",
+        btn_login: "Login",
+        label_email: "Email Address",
+        label_password: "Password",
+        no_account: "Don't have an account?",
+        register_here: "Register here",
+        register_title: "Create Account",
+        register_subtitle: "Register to start organizing your travel plans.",
+        btn_register: "Sign Up",
+        already_account: "Already have an account?",
+        login_here: "Sign in here"
+    },
+    es: {
+        logo_text: "FlyEasy",
+        nav_gestao: "Gestión",
+        nav_dashboards: "Paneles",
+        nav_settings: "Ajustes",
+        nav_login: "Login",
+        btn_nova_viagem: "Nuevo Viaje",
+
+        // Settings page
+        settings_title: "Configuraciones",
+        settings_subtitle: "Administre las preferencias de su cuenta y las configuraciones del sistema.",
+        profile_full_name: "Nombre Completo",
+        profile_email: "Dirección de Correo",
+        profile_phone: "Número de Teléfono",
+        profile_timezone: "Zona Horaria",
+        btn_save_changes: "Guardar Cambios del Perfil",
+        security_title: "Seguridad",
+        security_desc: "Administre su contraseña y la configuración de autenticación de dos factores.",
+        btn_update_password: "Actualizar Contraseña",
+        notifications_title: "Notificaciones",
+        notifications_desc: "Elija cómo desea ser alertado sobre las actualizaciones de vuelos.",
+        btn_manage_alerts: "Gestionar Alertas",
+        appearance_title: "Apariencia",
+        language_section_title: "IDIOMA",
+        data_export_title: "Datos & Exportación",
+        data_export_desc: "Exporte su historial de viajes y datos de informes en sus formatos preferidos.",
+        travel_summary: "Resumen de Viaje",
+        excel_format: "Excel (.xlsx)",
+        annual_report: "Reporte Anual",
+        pdf_format: "Documento PDF",
+        btn_delete_account: "🗑️ Eliminar Mi Cuenta",
+        promo_tag: "FLYEASY MÓVIL",
+        promo_title: "Obtenga la aplicación para administrar viajes desde cualquier lugar.",
+        opt_timezone_est: "Hora Estándar del Este (GMT-5)",
+        opt_timezone_brt: "Hora de Brasilia (GMT-3)",
+        opt_timezone_gmt: "Hora de Greenwich (GMT+0)",
+        opt_timezone_cet: "Hora de Europa Central (GMT+1)",
+
+        // Index/Gestão page
+        new_trip_title: "Nuevo Viaje",
+        label_passenger: "Nombre del Pasajero",
+        label_destino: "Destino",
+        label_ida: "Fecha de Ida",
+        label_volta: "Fecha de Vuelta",
+        label_hotel: "Nombre del Hotel",
+        label_status: "Estado del Pago",
+        label_valor: "Valor (R$)",
+        btn_cadastrar_viagem: "Registrar Viaje",
+        checklist_title: "Checklist",
+        placeholder_add_task: "Agregar nueva tarea...",
+        trips_title: "Viajes Registrados",
+        btn_filtrar: "Filtrar",
+        th_passenger: "Pasajero",
+        th_destino: "Destino",
+        th_ida: "Ida",
+        th_volta: "Vuelta",
+        th_hotel: "Hotel",
+        th_status: "Estado",
+        th_valor: "Valor",
+        opt_pago: "Pagado",
+        opt_pendente: "Pendiente",
+        opt_cancelado: "Cancelado",
+        system_actions_title: "Acciones del Sistema",
+        btn_export_excel: "Exportar a Excel",
+        btn_reiniciar: "Reiniciar",
+        link_privacidade: "Privacidad",
+        link_termos: "Términos",
+        link_suporte: "Soporte",
+        link_export_csv: "Exportar Datos CSV",
+        footer_copyright: "© 2024 FlyEasy - Gestión de Viajes Aerodinámica",
+
+        // Dashboard page
+        metric_total: "Total Invertido",
+        metric_pendentes: "Viajes Pendentes",
+        metric_frequente: "Destino Más Visitado",
+        chart_status_title: "Estado de Pagos",
+        chart_gastos_title: "Gastos por Destino",
+        loading: "Cargando...",
+
+        // Login page
+        login_title: "Iniciar Sesión",
+        login_subtitle: "Inicie sesión para gestionar sus viajes y sincronizar sus preferencias.",
+        btn_login: "Iniciar Sesión",
+        label_email: "Correo Electrónico",
+        label_password: "Contraseña",
+        no_account: "¿No tiene una cuenta?",
+        register_here: "Regístrese aquí",
+        register_title: "Crear Cuenta",
+        register_subtitle: "Regístrese para comenzar a organizar sus planes de viaje.",
+        btn_register: "Registrarse",
+        already_account: "¿Ya tiene una cuenta?",
+        login_here: "Inicie sesión aquí"
+    }
+};
+
+const applyLanguage = (lang) => {
+    localStorage.setItem('flyeasy_lang', lang);
+    const langDict = translations[lang] || translations.en;
+
+    // Update all elements with data-i18n attribute
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (langDict[key]) {
+            el.textContent = langDict[key];
+        }
+    });
+
+    // Update placeholders
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        if (langDict[key]) {
+            el.placeholder = langDict[key];
+        }
+    });
+};
+
+// Auto apply language on script load
+document.addEventListener('DOMContentLoaded', () => {
+    const savedLang = localStorage.getItem('flyeasy_lang') || 'en';
+    applyLanguage(savedLang);
+});

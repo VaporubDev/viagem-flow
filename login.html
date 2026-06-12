@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlyEasy | Login</title>
+    <link rel="icon" href="plane_icon.png" type="image/png">
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="dark.css">
+    <script src="auth_check.js"></script>
+    <style>
+        .login-wrapper {
+            max-width: 480px;
+            margin: 4rem auto;
+            width: 100%;
+        }
+        .login-card {
+            padding: 3rem;
+            position: relative;
+        }
+        .login-tabs {
+            display: flex;
+            border-bottom: 2px solid var(--border-color);
+            margin-bottom: 2rem;
+            gap: 1.5rem;
+        }
+        .login-tab-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            font-weight: 700;
+            padding-bottom: 0.75rem;
+            cursor: pointer;
+            position: relative;
+            transition: var(--transition);
+        }
+        .login-tab-btn.active {
+            color: var(--primary-color);
+        }
+        .login-tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background-color: var(--primary-color);
+            border-radius: 99px;
+        }
+        .form-toggle-section {
+            display: none;
+        }
+        .form-toggle-section.active {
+            display: block;
+        }
+        .switch-prompt {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+        .switch-prompt span {
+            color: var(--primary-color);
+            cursor: pointer;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        if (localStorage.getItem('excel_theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+        }
+    </script>
+
+    <div class="app-container">
+        <!-- Unified Header -->
+        <header class="app-header">
+            <div class="logo">
+                <img src="plane_icon.png" alt="FlyEasy" class="logo-icon" width="28" height="28">
+                <span class="logo-text" data-i18n="logo_text">FlyEasy</span>
+            </div>
+            <nav class="nav-links">
+                <a href="index.html" class="nav-item" data-i18n="nav_gestao">Gestão</a>
+                <a href="dashboard.html" class="nav-item" data-i18n="nav_dashboards">Dashboards</a>
+                <a href="settings.html" class="nav-item" data-i18n="nav_settings">Settings</a>
+            </nav>
+            <div class="header-actions">
+                <button type="button" class="btn-nova-viagem-header" onclick="window.location.href='index.html#viagemForm'" data-i18n="btn_nova_viagem">Nova Viagem</button>
+                <button class="icon-btn" id="btnNotificacoes" aria-label="Notificações">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                </button>
+
+                <div class="user-avatar" title="Cintia Souza" id="headerAvatar">
+                    <span class="avatar-fallback" id="headerAvatarFallback">CS</span>
+                </div>
+                <button id="btnTema" class="icon-btn theme-toggle" type="button" aria-label="Ativar modo escuro">🌙</button>
+            </div>
+        </header>
+
+        <!-- Main Card Wrapper -->
+        <div class="login-wrapper">
+            <div class="card login-card">
+                
+                <div class="login-tabs">
+                    <button type="button" class="login-tab-btn active" id="tabLogin" data-i18n="login_title">Acessar Conta</button>
+                    <button type="button" class="login-tab-btn" id="tabRegister" data-i18n="register_title">Criar Conta</button>
+                </div>
+
+                <!-- SECTION: LOGIN FORM -->
+                <div class="form-toggle-section active" id="sectionLogin">
+                    <p style="margin-bottom: 2rem; color: var(--text-muted); font-size: 0.95rem; font-weight: 500;" data-i18n="login_subtitle">Faça login para gerenciar suas viagens e sincronizar dados.</p>
+                    <form id="formLogin">
+                        <div class="input-group">
+                            <label for="loginEmail" data-i18n="label_email">Endereço de E-mail</label>
+                            <input type="email" id="loginEmail" placeholder="m.richardson@flyeasy.com" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="loginPassword" data-i18n="label_password">Senha</label>
+                            <input type="password" id="loginPassword" placeholder="••••••••" required>
+                        </div>
+                        <button type="submit" class="btn-primary" style="width: 100%; margin-top: 1rem;" data-i18n="btn_login">Entrar</button>
+                    </form>
+                    <div class="switch-prompt">
+                        <span data-i18n="no_account">Não tem uma conta?</span> <span onclick="switchTab('register')" data-i18n="register_here">Registre-se aqui</span>
+                    </div>
+                </div>
+
+                <!-- SECTION: REGISTER FORM -->
+                <div class="form-toggle-section" id="sectionRegister">
+                    <p style="margin-bottom: 2rem; color: var(--text-muted); font-size: 0.95rem; font-weight: 500;" data-i18n="register_subtitle">Cadastre-se para começar a organizar suas viagens.</p>
+                    <form id="formRegister">
+                        <div class="input-group">
+                            <label for="registerName" data-i18n="profile_full_name">Nome Completo</label>
+                            <input type="text" id="registerName" placeholder="Marcus Richardson" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="registerEmail" data-i18n="label_email">Endereço de E-mail</label>
+                            <input type="email" id="registerEmail" placeholder="m.richardson@flyeasy.com" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="registerPassword" data-i18n="label_password">Senha</label>
+                            <input type="password" id="registerPassword" placeholder="••••••••" required>
+                        </div>
+                        <button type="submit" class="btn-primary" style="width: 100%; margin-top: 1rem;" data-i18n="btn_register">Criar Conta</button>
+                    </form>
+                    <div class="switch-prompt">
+                        <span data-i18n="already_account">Já tem uma conta?</span> <span onclick="switchTab('login')" data-i18n="login_here">Acesse sua conta aqui</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Scripts -->
+    <script src="translate.js"></script>
+    <script src="login.js"></script>
+</body>
+</html>
