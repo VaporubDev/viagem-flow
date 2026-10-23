@@ -4,7 +4,7 @@ let viagens = [];
 let tarefas = [];
 let usingLocalFallback = false;
 
-// Helper para evitar lentidão esperando o timeout do navegador quando a API está offline
+// Requisição com timeout
 const fetchWithTimeout = async (resource, options = {}) => {
     const { timeout = 300 } = options;
     const controller = new AbortController();
@@ -24,7 +24,7 @@ const fetchWithTimeout = async (resource, options = {}) => {
 };
 
 async function carregarDados() {
-    // 1. Carregar dados locais imediatamente para evitar lag visual
+    // Carrega dados locais
     let viagensLocal = localStorage.getItem('viagens_db');
     let tarefasLocal = localStorage.getItem('tarefas_db');
     
@@ -51,19 +51,18 @@ async function carregarDados() {
         tarefasLocal = JSON.stringify(dadosDemoTarefas);
     }
     
-    // Filtrar dados locais pelo usuário atual
+    // Filtra pelo usuário atual
     const todasViagens = JSON.parse(viagensLocal);
     const todasTarefas = JSON.parse(tarefasLocal);
     viagens = todasViagens.filter(v => v.perfilId === profileLocal.id);
     tarefas = todasTarefas.filter(t => t.perfilId === profileLocal.id);
     
-    usingLocalFallback = true; // Default como offline-first
+    usingLocalFallback = true;
     
-    // Renderiza instantaneamente (0ms de lag)
     atualizarTabela();
     carregarTarefas();
 
-    // 2. Tenta atualizar dados em segundo plano (background)
+    // Sincroniza com a API
     try {
         const [viagensRes, tarefasRes] = await Promise.all([
             fetchWithTimeout(`${API_URL}/viagens?perfilId=${profileLocal.id}`, { timeout: 150 }),
@@ -78,7 +77,6 @@ async function carregarDados() {
             localStorage.setItem('tarefas_db', JSON.stringify(tarefas));
             console.log('Conectado à API backend SQLite. Dados sincronizados.');
             
-            // Sincroniza e re-renderiza se houver novos dados do servidor
             atualizarTabela();
             carregarTarefas();
         }
@@ -647,7 +645,7 @@ if (btnHeaderNovaViagem) {
     });
 }
 
-// Filtro e Ordenação
+// Filtros e ordenação
 let menuFiltro = null;
 
 const fecharMenuFiltro = () => {
@@ -664,7 +662,7 @@ const abrirMenuFiltro = (event) => {
     fecharMenuNotificacoes();
 
     const menu = document.createElement('div');
-    menu.className = 'menu-edicao'; // Reutiliza estilo do menu de edição
+    menu.className = 'menu-edicao';
     
     const titulo = document.createElement('strong');
     titulo.textContent = 'Filtros e Ordenação';
@@ -775,7 +773,7 @@ document.addEventListener('keydown', (event) => {
     }
 });
 
-// Notificações flutuantes
+// Notificações
 let menuNotificacoes = null;
 
 const fecharMenuNotificacoes = () => {
@@ -792,7 +790,7 @@ const abrirMenuNotificacoes = (event) => {
     fecharMenuFiltro();
 
     const menu = document.createElement('div');
-    menu.className = 'menu-edicao'; // Reutiliza estilo do menu de edição
+    menu.className = 'menu-edicao';
     menu.style.padding = '1.25rem 1.5rem';
     menu.style.textAlign = 'center';
     menu.style.width = '260px';
@@ -850,7 +848,7 @@ document.addEventListener('keydown', (event) => {
     }
 });
 
-// Update header avatar from saved profile
+// Atualiza avatar do cabeçalho
 const updateHeaderAvatar = () => {
     const saved = localStorage.getItem('flyeasy_profile');
     if (saved) {

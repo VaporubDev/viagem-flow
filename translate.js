@@ -284,7 +284,7 @@ const applyLanguage = (lang) => {
     localStorage.setItem('flyeasy_lang', lang);
     const langDict = translations[lang] || translations.en;
 
-    // Update all elements with data-i18n attribute
+    // Atualiza textos
     document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
         if (langDict[key]) {
@@ -292,7 +292,7 @@ const applyLanguage = (lang) => {
         }
     });
 
-    // Update placeholders
+    // Atualiza placeholders
     document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
         const key = el.getAttribute('data-i18n-placeholder');
         if (langDict[key]) {
@@ -301,7 +301,7 @@ const applyLanguage = (lang) => {
     });
 };
 
-// Auto apply language on script load
+// Inicialização
 document.addEventListener('DOMContentLoaded', () => {
     const savedLang = localStorage.getItem('flyeasy_lang') || 'en';
     applyLanguage(savedLang);

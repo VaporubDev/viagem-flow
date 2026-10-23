@@ -1,7 +1,7 @@
 const API_URL = 'http://localhost:5144/api';
 const THEME_KEY = 'excel_theme';
 
-// Helper para evitar lentidão esperando o timeout do navegador quando a API está offline
+// Requisição com timeout
 const fetchWithTimeout = async (resource, options = {}) => {
     const { timeout = 300 } = options;
     const controller = new AbortController();
@@ -61,7 +61,7 @@ async function carregarDashboard() {
         atualizarBotaoTema();
     }
 
-    // 1. Carregar local imediatamente para renderização instantânea (0ms delay)
+    // Carrega dados locais
     const profileStrLocal = localStorage.getItem('flyeasy_profile');
     const profileLocal = profileStrLocal ? JSON.parse(profileStrLocal) : { id: 1 };
 
@@ -80,14 +80,13 @@ async function carregarDashboard() {
         exibirDadosVazios();
     }
 
-    // 2. Buscar da API em segundo plano para sincronizar
+    // Sincroniza com a API
     try {
         const response = await fetchWithTimeout(`${API_URL}/viagens?perfilId=${profileLocal.id}`, { timeout: 150 });
         if (response.ok) {
             dadosViagens = await response.json();
             localStorage.setItem('viagens_db', JSON.stringify(dadosViagens));
             
-            // Re-renderiza com os dados atualizados do servidor
             renderizarMetricas(dadosViagens);
             renderizarGraficos(dadosViagens);
         }
@@ -280,7 +279,7 @@ function renderizarGraficos(viagens) {
 }
 document.addEventListener('DOMContentLoaded', carregarDashboard);
 
-// Notificações flutuantes no Dashboard
+// Notificações
 let menuNotificacoes = null;
 
 const fecharMenuNotificacoes = () => {
@@ -295,7 +294,7 @@ const abrirMenuNotificacoes = (event) => {
     fecharMenuNotificacoes();
 
     const menu = document.createElement('div');
-    menu.className = 'menu-edicao'; // Reutiliza estilo do menu
+    menu.className = 'menu-edicao';
     menu.style.padding = '1.25rem 1.5rem';
     menu.style.textAlign = 'center';
     menu.style.width = '260px';
@@ -353,7 +352,7 @@ document.addEventListener('keydown', (event) => {
     }
 });
 
-// Update header avatar from saved profile
+// Atualiza avatar do cabeçalho
 const updateHeaderAvatar = () => {
     const saved = localStorage.getItem('flyeasy_profile');
     if (saved) {

@@ -2,7 +2,7 @@
     const API_URL = 'http://localhost:5144/api';
     const PROFILE_KEY = 'flyeasy_profile';
 
-    // Helper to check API status
+    // Verifica status da API
     const checkAPI = async () => {
         try {
             const res = await fetch(`${API_URL}/viagens`, { method: 'GET', signal: AbortSignal.timeout(300) });
@@ -16,13 +16,13 @@
     const isLoggedIn = !!localStorage.getItem(PROFILE_KEY);
     const currentPage = window.location.pathname.split('/').pop() || 'index.html';
 
-    // If online and NOT logged in, redirect to login.html
+    // Redireciona para login se não autenticado
     if (isOnline && !isLoggedIn && currentPage !== 'login.html') {
         window.location.href = 'login.html';
         return;
     }
 
-    // Function to run after DOM loads to update UI elements
+    // Atualiza interface de autenticação
     const updateAuthUI = () => {
         const navLinksContainer = document.querySelector('.nav-links');
         const headerActions = document.querySelector('.header-actions');
@@ -30,9 +30,7 @@
         const userAvatar = document.getElementById('headerAvatar');
 
         if (isOnline && !isLoggedIn) {
-            // Hide Management, Dashboard, Settings tabs
             if (navLinksContainer) {
-                // Find all items except Login
                 const items = navLinksContainer.querySelectorAll('.nav-item');
                 items.forEach(item => {
                     const i18n = item.getAttribute('data-i18n');
@@ -45,11 +43,9 @@
                 });
             }
 
-            // Hide Nova Viagem button and user avatar
             if (btnNovaViagem) btnNovaViagem.style.display = 'none';
             if (userAvatar) userAvatar.style.display = 'none';
 
-            // Ensure a Login button is visible in header actions if not already there
             let btnLoginHeader = document.getElementById('btnLoginHeader');
             if (!btnLoginHeader && headerActions) {
                 btnLoginHeader = document.createElement('button');
@@ -65,15 +61,12 @@
                 headerActions.insertBefore(btnLoginHeader, headerActions.firstChild);
             }
         } else if (isOnline && isLoggedIn) {
-            // Logged in online mode
             if (btnNovaViagem) btnNovaViagem.style.display = 'inline-block';
             if (userAvatar) userAvatar.style.display = 'flex';
 
-            // Remove temporary Login button if it exists
             const btnLoginHeader = document.getElementById('btnLoginHeader');
             if (btnLoginHeader) btnLoginHeader.remove();
 
-            // Set up Logout link in nav
             if (navLinksContainer) {
                 const loginItem = Array.from(navLinksContainer.querySelectorAll('.nav-item')).find(item => item.getAttribute('data-i18n') === 'nav_login');
                 if (loginItem) {
@@ -88,21 +81,19 @@
                 }
             }
         } else {
-            // Offline/Demo Mode - Unrestricted Access
             if (btnNovaViagem) btnNovaViagem.style.display = 'inline-block';
             if (userAvatar) userAvatar.style.display = 'flex';
 
             const btnLoginHeader = document.getElementById('btnLoginHeader');
             if (btnLoginHeader) btnLoginHeader.remove();
 
-            // Hide Login link in demo mode since everything is unlocked locally
             if (navLinksContainer) {
                 const loginItem = Array.from(navLinksContainer.querySelectorAll('.nav-item')).find(item => item.getAttribute('data-i18n') === 'nav_login');
                 if (loginItem) loginItem.style.display = 'none';
             }
         }
 
-        // Apply profile avatar or initials
+        // Atualiza avatar do cabeçalho
         const profileStr = localStorage.getItem(PROFILE_KEY);
         const prof = profileStr ? JSON.parse(profileStr) : null;
         if (prof && userAvatar) {
@@ -159,7 +150,7 @@ function setupAvatarDropdown() {
             return;
         }
 
-        document.dispatchEvent(new Event('click')); // fechar outros menus
+        document.dispatchEvent(new Event('click'));
 
         const profileStr = localStorage.getItem('flyeasy_profile');
         const prof = profileStr ? JSON.parse(profileStr) : null;
@@ -170,8 +161,8 @@ function setupAvatarDropdown() {
         menuPerfil.style.padding = '1.5rem';
         menuPerfil.style.width = '280px';
         menuPerfil.style.textAlign = 'center';
-        menuPerfil.style.alignItems = 'center'; // Centralizar itens do flex
-        menuPerfil.style.position = 'absolute'; // Mudar para absolute para rolar junto com a página
+        menuPerfil.style.alignItems = 'center';
+        menuPerfil.style.position = 'absolute';
         menuPerfil.style.zIndex = '9999';
 
         const avatarCircle = document.createElement('div');
@@ -233,7 +224,6 @@ function setupAvatarDropdown() {
         menuPerfil.style.top = `${rect.bottom - headerRect.top + 12}px`;
         menuPerfil.style.left = `${rect.right - headerRect.left - 280}px`; 
 
-        // Se passar da tela (esquerda), ajustar
         const menuRect = menuPerfil.getBoundingClientRect();
         if (rect.right - 280 < 10) {
             menuPerfil.style.left = '10px';

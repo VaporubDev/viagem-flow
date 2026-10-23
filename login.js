@@ -2,7 +2,7 @@ const API_URL = 'http://localhost:5144/api';
 const THEME_KEY = 'excel_theme';
 const PROFILE_KEY = 'flyeasy_profile';
 
-// Toggle Form sections
+// Alterna abas
 const tabLogin = document.getElementById('tabLogin');
 const tabRegister = document.getElementById('tabRegister');
 const sectionLogin = document.getElementById('sectionLogin');
@@ -25,11 +25,11 @@ const switchTab = (tab) => {
 tabLogin.addEventListener('click', () => switchTab('login'));
 tabRegister.addEventListener('click', () => switchTab('register'));
 
-// DOM Forms
+// Formulários
 const formLogin = document.getElementById('formLogin');
 const formRegister = document.getElementById('formRegister');
 
-// Offline accounts helper
+// Armazenamento offline
 const getOfflineAccounts = () => JSON.parse(localStorage.getItem('local_accounts')) || [];
 const saveOfflineAccount = (acc) => {
     const accounts = getOfflineAccounts();
@@ -37,7 +37,7 @@ const saveOfflineAccount = (acc) => {
     localStorage.setItem('local_accounts', JSON.stringify(accounts));
 };
 
-// Check if API is available (ping endpoint)
+// Verifica status da API
 const checkAPI = async () => {
     try {
         const res = await fetch(`${API_URL}/viagens`, { method: 'GET', signal: AbortSignal.timeout(300) });
@@ -47,7 +47,7 @@ const checkAPI = async () => {
     }
 };
 
-// Register Handler
+// Cadastro
 formRegister.addEventListener('submit', async (e) => {
     e.preventDefault();
     const name = document.getElementById('registerName').value;
@@ -85,14 +85,12 @@ formRegister.addEventListener('submit', async (e) => {
             }
         } catch(error) {
             console.error('API Error during register, falling back:', error);
-            // fallback
             saveOfflineAccount(profileData);
             localStorage.setItem(PROFILE_KEY, JSON.stringify(profileData));
             alert('✅ Registered offline fallback mode active!');
             window.location.href = 'index.html';
         }
     } else {
-        // Fallback local registration
         saveOfflineAccount(profileData);
         localStorage.setItem(PROFILE_KEY, JSON.stringify(profileData));
         alert('✅ Registered offline fallback mode active!');
@@ -100,7 +98,7 @@ formRegister.addEventListener('submit', async (e) => {
     }
 });
 
-// Login Handler
+// Login
 formLogin.addEventListener('submit', async (e) => {
     e.preventDefault();
     const email = document.getElementById('loginEmail').value;
@@ -131,7 +129,6 @@ formLogin.addEventListener('submit', async (e) => {
             }
         } catch(error) {
             console.error('API Error during login, falling back:', error);
-            // Local check
             performOfflineLogin(email, password, lang);
         }
     } else {
@@ -154,7 +151,7 @@ const performOfflineLogin = (email, password, lang) => {
     }
 };
 
-// Theme Sync logic
+// Tema claro / escuro
 const btnTema = document.getElementById('btnTema');
 
 const updateThemeUI = (isDark) => {
@@ -181,7 +178,7 @@ const initTheme = () => {
     }
 };
 
-// Update header avatar from saved profile
+// Atualiza avatar do cabeçalho
 const updateHeaderAvatar = () => {
     const saved = localStorage.getItem(PROFILE_KEY);
     if (saved) {
@@ -207,7 +204,7 @@ const updateHeaderAvatar = () => {
     }
 };
 
-// Init
+// Inicialização
 initTheme();
 updateHeaderAvatar();
 window.switchTab = switchTab;

@@ -2,7 +2,7 @@ const API_URL = 'http://localhost:5144/api';
 const THEME_KEY = 'excel_theme';
 const PROFILE_KEY = 'flyeasy_profile';
 
-// Mock data initialization if profile doesn't exist
+// Perfil padrão
 const DEFAULT_PROFILE = {
     fullName: 'Marcus Richardson',
     email: 'm.richardson@flyeasy.com',
@@ -12,10 +12,10 @@ const DEFAULT_PROFILE = {
     language: 'en'
 };
 
-// Load saved data or initialize
+// Carrega perfil salvo
 let profile = JSON.parse(localStorage.getItem(PROFILE_KEY)) || DEFAULT_PROFILE;
 
-// DOM Elements
+// Elementos do formulário
 const profileForm = document.getElementById('profileForm');
 const profileFullName = document.getElementById('profileFullName');
 const profileEmail = document.getElementById('profileEmail');
@@ -28,7 +28,7 @@ const headerAvatarFallback = document.getElementById('headerAvatarFallback');
 
 const btnTema = document.getElementById('btnTema');
 
-// Check if API is available (ping endpoint)
+// Verifica status da API
 const checkAPI = async () => {
     try {
         const res = await fetch(`${API_URL}/viagens`, { method: 'GET', signal: AbortSignal.timeout(300) });
@@ -38,7 +38,7 @@ const checkAPI = async () => {
     }
 };
 
-// Load profile values into inputs and display
+// Renderiza perfil
 const renderProfile = () => {
     profileFullName.value = profile.fullName || '';
     profileEmail.value = profile.email || '';
@@ -47,7 +47,6 @@ const renderProfile = () => {
 
     profileNameDisplay.textContent = profile.fullName || '';
 
-    // Update Avatar initials
     if (profile.avatar) {
         if (document.getElementById('profileImage')) {
             document.getElementById('profileImage').src = profile.avatar;
@@ -81,7 +80,7 @@ const renderProfile = () => {
     }
 };
 
-// Sync profile with backend if online
+// Sincroniza perfil com a API
 const loadProfileFromDB = async () => {
     const isOnline = await checkAPI();
     if (isOnline && profile.email) {
@@ -99,7 +98,7 @@ const loadProfileFromDB = async () => {
     }
 };
 
-// Save Profile
+// Salva perfil
 if (profileForm) {
     profileForm.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -131,7 +130,7 @@ if (profileForm) {
     });
 }
 
-// Local Avatar Image Upload
+// Upload de avatar
 const btnEditAvatar = document.getElementById('btnEditAvatar');
 const fileAvatarInput = document.getElementById('fileAvatarInput');
 
@@ -149,13 +148,9 @@ if (btnEditAvatar && fileAvatarInput) {
             const base64Image = event.target.result;
             profile.avatar = base64Image;
             
-            // Save to LocalStorage
             localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
-            
-            // Update UI
             renderProfile();
             
-            // Save to DB
             const isOnline = await checkAPI();
             if (isOnline) {
                 try {
@@ -173,7 +168,7 @@ if (btnEditAvatar && fileAvatarInput) {
     });
 }
 
-// Dark Mode Theme Logic
+// Tema claro / escuro
 const updateThemeUI = (isDark) => {
     if (isDark) {
         document.body.classList.add('dark-mode');
@@ -198,7 +193,7 @@ const initTheme = () => {
     }
 };
 
-// Language Selection
+// Seleção de idioma
 const langButtons = document.querySelectorAll('.lang-btn');
 langButtons.forEach(btn => {
     btn.addEventListener('click', async () => {
@@ -223,14 +218,13 @@ langButtons.forEach(btn => {
         
         localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
         
-        // Execute global applyLanguage from translate.js
         if (typeof applyLanguage === 'function') {
             applyLanguage(selectedLang);
         }
     });
 });
 
-// Notifications Dropdown Menu
+// Notificações
 let menuNotificacoes = null;
 
 const fecharMenuNotificacoes = () => {
@@ -303,7 +297,7 @@ document.addEventListener('keydown', (event) => {
     }
 });
 
-// Excel Download Implementation
+// Exportação para Excel
 const formatarData = (dataStr) => {
     if (!dataStr) return '-';
     const parts = dataStr.split('-');
@@ -382,7 +376,7 @@ if (btnDownloadSummary) {
     btnDownloadSummary.addEventListener('click', downloadSummary);
 }
 
-// Annual PDF Download Implementation
+// Relatório em PDF
 const generatePDFReport = () => {
     try {
         const { jsPDF } = window.jspdf;
@@ -402,7 +396,6 @@ const generatePDFReport = () => {
         const pendentes = viagens.filter(v => v.status === 'Pendente').reduce((sum, v) => sum + (parseFloat(v.valor) || 0), 0);
         const canceladas = viagens.filter(v => v.status === 'Cancelado').reduce((sum, v) => sum + (parseFloat(v.valor) || 0), 0);
 
-        // Hidden canvas for Chart
         const canvas = document.createElement('canvas');
         canvas.width = 400;
         canvas.height = 300;
@@ -476,7 +469,7 @@ if (btnDownloadReport) {
     btnDownloadReport.addEventListener('click', generatePDFReport);
 }
 
-// Delete Account / Reset everything
+// Exclusão de conta
 const btnDeleteAccount = document.getElementById('btnDeleteAccount');
 if (btnDeleteAccount) {
     btnDeleteAccount.addEventListener('click', async () => {
@@ -509,7 +502,7 @@ if (btnDeleteAccount) {
     });
 }
 
-// Logout logic
+// Logout
 const btnLogoutSettings = document.getElementById('btnLogoutSettings');
 if (btnLogoutSettings) {
     btnLogoutSettings.addEventListener('click', () => {
@@ -518,7 +511,7 @@ if (btnLogoutSettings) {
     });
 }
 
-// Extra Settings sub-card buttons mock behavior
+// Ações adicionais
 const btnUpdatePassword = document.getElementById('btnUpdatePassword');
 if (btnUpdatePassword) {
     btnUpdatePassword.addEventListener('click', () => {
@@ -535,18 +528,16 @@ if (btnManageAlerts) {
     });
 }
 
-// Initialize Page
+// Inicialização
 renderProfile();
 initTheme();
 loadProfileFromDB();
 
-// Set language button active based on profile language settings
 if (profile.language) {
     const activeLangBtn = document.querySelector(`.lang-btn[data-lang="${profile.language}"]`);
     if (activeLangBtn) {
         langButtons.forEach(b => b.classList.remove('active'));
         activeLangBtn.classList.add('active');
-        // Set initial language translations on load
         if (typeof applyLanguage === 'function') {
             applyLanguage(profile.language);
         }
