@@ -3,6 +3,8 @@
 🔗 **[Acesse a Demonstração Online](https://vaporubdev.github.io/viagem-flow/)**
 🔗 **[Acesse o Protótipo no Figma](https://www.figma.com/design/oafKYaI5IKfEznTb2JGFMu/Untitled?node-id=0-1&t=pLJVHSvxAs1nrbm8-1)**
 
+![Preview do FlyEasy](viagem-flow-preview.png)
+
 FlyEasy é uma aplicação moderna e intuitiva para **gestão de viagens, checklist de tarefas e análise de dados (Dashboard)**, projetada para oferecer uma experiência ágil, fluida e visualmente premium.
 
 O projeto conta com um frontend estático interativo e um backend robusto construído sobre a plataforma **.NET**, utilizando banco de dados **SQLite** para persistência local dos dados.
